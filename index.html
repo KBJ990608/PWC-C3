@@ -6,39 +6,42 @@
 <title>CIMO · 회의 시간 모으기</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#FBF8F4; --bg-elev:#FFFFFF; --bg-sunk:#F2ECE1;
-  --ink:#1C2127; --ink-soft:#656C78; --ink-faint:#9BA1AC;
-  --line:#E7E0D2; --line-strong:#D8CEBB;
-  --brand:#FF6A2B; --brand-ink:#B4420F; --brand-bg:#FFE8DB;
-  --gold:#D9A62A; --gold-bg:#FFF2CE; --gold-ink:#7A5B07;
-  --danger:#D94F4F; --danger-bg:#FBE3E3;
+  --bg:#FFFFFF; --bg-elev:#FFFFFF; --bg-sunk:#F4F4F4;
+  --ink:#2D2D2D; --ink-soft:#6B6B6B; --ink-faint:#9A9A9A;
+  --line:#E6E6E6; --line-strong:#CFCFCF;
+  --brand:#D04A02; --brand-ink:#B23F02; --brand-bg:#FDEBE0;
+  --gold:#FFB600; --gold-bg:#FFF4D6; --gold-ink:#7A5800;
+  --danger:#C62828; --danger-bg:#FDE4E4;
   --ok:#2F9E5B;
-  --radius:14px; --radius-sm:8px;
-  --shadow:0 2px 10px rgba(28,33,39,.06), 0 1px 2px rgba(28,33,39,.05);
+  --head:#D04A02; --on-head:#FFFFFF;
+  --radius:12px; --radius-sm:10px;
+  --shadow:0 2px 10px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.05);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#15171B; --bg-elev:#1D2026; --bg-sunk:#111317;
-    --ink:#F0EEEA; --ink-soft:#A8ACB5; --ink-faint:#6D7178;
-    --line:#2A2D34; --line-strong:#383C44;
-    --brand:#FF7D45; --brand-ink:#FFB18A; --brand-bg:#3A2415;
-    --gold:#E8BC54; --gold-bg:#3A2F10; --gold-ink:#F0CB71;
+    --bg:#161616; --bg-elev:#1F1F1F; --bg-sunk:#2A2A2A;
+    --ink:#F2F2F2; --ink-soft:#B0B0B0; --ink-faint:#7A7A7A;
+    --line:#2F2F2F; --line-strong:#454545;
+    --brand:#E0601A; --brand-ink:#FF9A5C; --brand-bg:#3A1F0E;
+    --gold:#FFB600; --gold-bg:#3A2E0A; --gold-ink:#FFCD4D;
     --danger:#E8716E; --danger-bg:#3A1E1E;
+    --head:#B23F02; --on-head:#FFFFFF;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#15171B; --bg-elev:#1D2026; --bg-sunk:#111317;
-  --ink:#F0EEEA; --ink-soft:#A8ACB5; --ink-faint:#6D7178;
-  --line:#2A2D34; --line-strong:#383C44;
-  --brand:#FF7D45; --brand-ink:#FFB18A; --brand-bg:#3A2415;
-  --gold:#E8BC54; --gold-bg:#3A2F10; --gold-ink:#F0CB71;
-  --danger:#E8716E; --danger-bg:#3A1E1E;
-  color-scheme: dark;
+  --bg:#161616; --bg-elev:#1F1F1F; --bg-sunk:#2A2A2A;
+    --ink:#F2F2F2; --ink-soft:#B0B0B0; --ink-faint:#7A7A7A;
+    --line:#2F2F2F; --line-strong:#454545;
+    --brand:#E0601A; --brand-ink:#FF9A5C; --brand-bg:#3A1F0E;
+    --gold:#FFB600; --gold-bg:#3A2E0A; --gold-ink:#FFCD4D;
+    --danger:#E8716E; --danger-bg:#3A1E1E;
+    --head:#B23F02; --on-head:#FFFFFF;
+    color-scheme: dark;
 }
 *{box-sizing:border-box;}
 html,body{height:100%;}
@@ -49,7 +52,7 @@ body{
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px);}
-.disp{font-family:'Space Grotesk','Noto Sans KR',sans-serif;}
+.disp{font-family:'Noto Sans KR','Noto Sans KR',sans-serif;}
 #shell{max-width:560px; margin:0 auto; min-height:100%; position:relative; background:var(--bg); display:flex; flex-direction:column;}
 button{font-family:inherit;}
 input,select,textarea{font-family:inherit; font-size:15px;}
@@ -69,7 +72,7 @@ a{color:inherit;}
 .iconbtn{appearance:none; border:none; background:none; color:var(--ink); width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; flex-shrink:0;}
 .iconbtn:active{background:var(--bg-sunk);}
 .roomchip{display:flex; align-items:center; gap:6px; background:var(--bg-sunk); border:1px solid var(--line); border-radius:999px; padding:5px 10px 5px 12px; font-size:13px; color:var(--ink-soft); cursor:pointer;}
-.roomchip b{color:var(--ink); font-family:'Space Grotesk'; letter-spacing:.03em;}
+.roomchip b{color:var(--ink); font-family:inherit; letter-spacing:.03em;}
 .topbar .title{flex:1; min-width:0; font-weight:700; font-size:16px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 .star{font-size:20px; cursor:pointer; color:var(--ink-faint); background:none; border:none; padding:4px;}
 .star.on{color:var(--gold);}
@@ -101,7 +104,7 @@ a{color:inherit;}
 hr.sep{border:none; border-top:1px solid var(--line); margin:4px 0;}
 
 /* code input */
-.codeinput{letter-spacing:.3em; text-align:center; font-family:'Space Grotesk'; font-size:20px; font-weight:700;}
+.codeinput{letter-spacing:.3em; text-align:center; font-family:inherit; font-size:20px; font-weight:700;}
 .err{color:var(--danger); font-size:13px; margin-top:-8px;}
 
 /* collapsible lists */
@@ -114,7 +117,7 @@ details.menu[open] summary::after{transform:rotate(180deg);}
 .roomitem{display:flex; align-items:center; gap:8px; padding:9px 8px; border-radius:var(--radius-sm); cursor:pointer;}
 .roomitem:active{background:var(--bg-sunk);}
 .roomitem .nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:14px;}
-.roomitem .cd{font-family:'Space Grotesk'; font-size:12px; color:var(--ink-faint);}
+.roomitem .cd{font-family:inherit; font-size:12px; color:var(--ink-faint);}
 .empty-small{color:var(--ink-faint); font-size:13px; padding:14px 10px; text-align:center;}
 
 /* chips */
@@ -158,8 +161,8 @@ table.timetable{border-collapse:collapse; width:100%;}
 table.timetable th,table.timetable td{border:1px solid var(--line); padding:0;}
 table.timetable thead th{position:sticky; top:0; background:var(--bg-elev); z-index:3; font-size:11px; font-weight:700; padding:8px 2px; color:var(--ink-soft); white-space:nowrap;}
 table.timetable th.timecol-h{left:0; z-index:4; position:sticky;}
-table.timetable td.timecol{position:sticky; left:0; background:var(--bg-elev); z-index:2; font-size:11px; color:var(--ink-faint); text-align:right; padding:0 6px; white-space:nowrap; font-family:'Space Grotesk';}
-.cell{width:40px; height:26px; cursor:pointer; background:var(--bg-sunk);}
+table.timetable td.timecol{position:sticky; left:0; background:var(--bg-elev); z-index:2; font-size:11px; color:var(--ink-faint); text-align:right; padding:0 6px; white-space:nowrap; font-family:inherit;}
+.cell{width:100%; min-width:40px; height:26px; box-sizing:border-box; cursor:pointer; background:var(--bg-sunk); display:flex; align-items:center; justify-content:center;}
 .cell.on{background:var(--brand);}
 .cell.gold{background:var(--gold) !important;}
 .cell.hl{box-shadow:inset 0 0 0 2px var(--brand-ink);}
@@ -169,15 +172,25 @@ table.timetable td.timecol{position:sticky; left:0; background:var(--bg-elev); z
 .busy-lbl{position:absolute; left:2px; right:2px; top:50%; transform:translateY(-50%); font-size:9px; line-height:1.1; font-weight:700; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; pointer-events:none; text-align:left;}
 .cell.busy.on .busy-lbl{color:#fff;}
 .busy-legend{display:inline-block; width:14px; height:10px; border-radius:2px; vertical-align:-1px; margin-right:4px; background:var(--bg-sunk) repeating-linear-gradient(135deg, var(--line-strong) 0 2px, transparent 2px 6px);}
-.heat-count{font-size:9px; color:var(--ink-soft); text-align:center; display:block; line-height:26px;}
+.heat-count{font-size:9px; color:var(--ink-soft); text-align:center; line-height:1.3;}
+.tl-axis{display:flex; justify-content:space-between; font-size:11px; color:var(--ink-faint); padding:0 2px 6px 74px; font-weight:600;}
+.tl-row{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+.tl-row:last-child{margin-bottom:0;}
+.tl-label{width:64px; flex-shrink:0; font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+.tl-bar{flex:1; display:flex; height:32px; border-radius:7px; overflow:hidden; background:var(--bg-sunk);}
+.tl-seg{display:flex; align-items:center; justify-content:center; cursor:pointer; border-right:1.5px solid var(--bg-elev); min-width:2px;}
+.tl-seg:last-child{border-right:none;}
+.tl-seg.heated .heat-count{color:#fff; font-weight:700; font-size:11px;}
+.tl-seg.gold .heat-count{color:var(--gold-ink); font-weight:900; font-size:11px;}
 .cell.gold .heat-count{color:var(--gold-ink); font-weight:700;}
+.cell.heated .heat-count{color:#fff; font-weight:700;}
 
 /* rank cards */
 .rankcard{display:flex; gap:14px; padding:14px; border-radius:var(--radius); background:var(--bg-elev); border:1px solid var(--line); cursor:pointer; align-items:center;}
 .rankcard.r1{border-left:4px solid var(--gold);}
 .rankcard.r2{border-left:4px solid var(--line-strong);}
 .rankcard.r3{border-left:4px solid var(--line-strong);}
-.rankcard .num{font-family:'Space Grotesk'; font-size:26px; font-weight:700; color:var(--ink-faint); width:30px; text-align:center; flex-shrink:0;}
+.rankcard .num{font-family:inherit; font-size:26px; font-weight:700; color:var(--ink-faint); width:30px; text-align:center; flex-shrink:0;}
 .rankcard.r1 .num{color:var(--gold-ink);}
 .rankcard .mid{flex:1; min-width:0;}
 .rankcard .range{font-weight:700; font-size:15px;}
@@ -196,8 +209,96 @@ table.timetable td.timecol{position:sticky; left:0; background:var(--bg-elev); z
 ::placeholder{color:var(--ink-faint);}
 .stepper{display:flex; align-items:center; gap:10px;}
 .stepper button{width:34px; height:34px; border-radius:50%; border:1px solid var(--line-strong); background:var(--bg-elev); font-size:18px; cursor:pointer;}
-.stepper b{min-width:32px; text-align:center; font-family:'Space Grotesk'; font-size:16px;}
+.stepper b{min-width:32px; text-align:center; font-family:inherit; font-size:16px;}
 .savemode{font-size:11px; color:var(--ink-faint); text-align:center;}
+
+/* ===== PwC 리디자인 오버라이드 ===== */
+.topbar,.appbar{background:var(--head); color:var(--on-head); border-bottom:none;}
+.topbar{padding:10px 12px 10px 6px; padding-top:calc(10px + env(safe-area-inset-top,0px)); gap:4px;}
+.topbar .iconbtn{color:var(--on-head); width:40px; height:40px;}
+.topbar .iconbtn:active{background:rgba(255,255,255,.18);}
+.topbar .title{color:var(--on-head); font-weight:900; font-size:18px;}
+.topbar .star{color:rgba(255,255,255,.75);}
+.topbar .star.on{color:var(--gold);}
+.topbar .roomchip{background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); color:var(--on-head); padding:5px 10px;}
+.topbar .roomchip b{color:var(--on-head);}
+.topbar .modeic{display:flex; align-items:center; color:rgba(255,255,255,.85);}
+.appbar{position:sticky; top:0; z-index:30; padding:18px 16px 16px; padding-top:calc(18px + env(safe-area-inset-top,0px)); display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.appbar .brand{font-size:20px; font-weight:900; letter-spacing:-.01em;}
+.appbar .sub{font-size:12.5px; font-weight:500;}
+.ico{display:inline-flex; align-items:center; justify-content:center;}
+.ico svg{display:block;}
+.btn{border-radius:10px; padding:15px 20px; font-size:16px;}
+.btn-sm{border-radius:999px; padding:9px 14px; font-size:13px;}
+.btn-ghost{background:var(--bg-elev); color:var(--brand-ink); border:1.5px solid var(--brand);}
+.btn-gold{background:var(--gold); color:#2D2D2D; font-weight:900;}
+.field input[type=text],.field input[type=number],.field input[type=password],.field select,.field textarea,.scr select,.scr input[type=date],.scr input[type=text]{
+  background:var(--bg-sunk); border:1px solid var(--line); border-radius:10px;}
+.scr select,.scr input[type=date]{padding:11px 12px; color:var(--ink); font-size:15px;}
+.codeinput{background:var(--bg-elev) !important;}
+.card{border-radius:12px;}
+details.menu{background:var(--bg-sunk); border:none;}
+.chip{background:var(--bg-elev); border:1.5px solid var(--brand); color:var(--brand-ink); font-weight:700; padding:6px 12px;}
+.chip.pinned,.chip.x{background:var(--brand); border-color:var(--brand); color:#fff;}
+.chip.x button{color:#fff;}
+.seg{border:1.5px solid var(--line-strong); color:var(--ink-soft);}
+.seg.on{background:var(--brand); border-color:var(--brand); color:#fff;}
+.cal-day{border-radius:10px;}
+.banner-gold{border:1.5px solid var(--gold); color:var(--ink);}
+.tabs{padding-top:4px;}
+.tab{color:var(--ink-faint);}
+.tab.on{color:var(--brand);}
+.tab .ic{height:22px;}
+table.timetable{border-collapse:separate; border-spacing:3px;}
+table.timetable th,table.timetable td{border:none;}
+.cell{border-radius:5px; height:24px;}
+.gridwrap{border:1px solid var(--line); padding:4px;}
+.rankcard{flex-direction:column; align-items:stretch; gap:4px; border:1.5px solid var(--line); padding:12px 14px;}
+.rankcard.r1{background:var(--gold-bg); border-color:var(--gold); border-left-width:1.5px;}
+.rankcard.r2,.rankcard.r3{border-left-width:1.5px; border-left-color:var(--line);}
+.rankcard.selected{box-shadow:0 0 0 2px var(--brand);}
+.refcard.selected{box-shadow:0 0 0 2px var(--brand); border-style:solid !important; border-color:var(--brand) !important;}
+.statrow{display:flex; gap:8px;}
+.statblock{flex:1; text-align:center; padding:10px 4px; border-radius:10px; background:var(--bg-sunk);}
+.statblock .statnum{font-size:20px; font-weight:900; line-height:1.1;}
+.statblock .statlbl{font-size:11px; color:var(--ink-soft); margin-top:3px; font-weight:700;}
+.statblock.ok{background:var(--gold-bg);} .statblock.ok .statnum{color:var(--gold-ink);}
+.statblock.bad{background:var(--danger-bg);} .statblock.bad .statnum{color:var(--danger);}
+.statblock.pend{background:var(--bg-sunk);} .statblock.pend .statnum{color:var(--ink-faint);}
+/* 설정 수정의 참가자 토글: 기본은 귀여운 주황, 필수인원으로 켜면 노란색 */
+.chip.reqToggle{background:var(--brand-bg); border:1.5px solid var(--brand); color:var(--brand-ink); font-weight:700; border-radius:999px; cursor:pointer;}
+.chip.reqToggle.on{background:var(--gold); border-color:var(--gold); color:#2D2D2D;}
+.chip.reqToggle:disabled{opacity:.85; cursor:default;}
+.wk-headrow{display:flex;}
+.wk-hourcol{width:34px; flex-shrink:0; position:relative;}
+.wk-headdays{flex:1; display:flex;}
+.wk-headcell{flex:1; text-align:center; font-size:11px; font-weight:700; color:var(--ink-soft); padding-bottom:6px;}
+.wk-headcell.today{font-weight:900;}
+.wk-headdate{display:block; font-size:13px; margin-top:1px;}
+.wk-wrap{position:relative; display:flex; border-top:1px solid var(--line);}
+.wk-hourlbl{position:absolute; transform:translateY(-50%); font-size:9.5px; color:var(--ink-faint); right:4px;}
+.wk-days{flex:1; display:flex; position:relative;}
+.wk-day{flex:1; position:relative; border-right:1px solid var(--line); border-left:1px solid var(--line); margin-left:-1px;}
+.wk-day.today{background:var(--brand-bg);}
+.wk-block{position:absolute; left:2px; right:2px; border-radius:5px; padding:3px 4px; overflow:hidden; cursor:default; box-shadow:0 1px 2px rgba(0,0,0,.15);}
+.wk-block-name{font-size:9.5px; color:#fff; font-weight:800; line-height:1.25; word-break:keep-all;}
+.rankcard .range{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.rbadge{font-size:12px; font-weight:900; padding:2px 9px; border-radius:999px; background:var(--brand); color:#fff;}
+.rankcard.r1 .rbadge{background:var(--gold); color:#2D2D2D;}
+.rankcard.r3 .rbadge{background:#6B6B6B; color:#fff;}
+.rtag{font-size:11px; font-weight:700; color:var(--brand-ink); background:var(--brand-bg); padding:1px 7px; border-radius:999px;}
+.statchip{display:inline-flex; align-items:center; gap:5px; padding:6px 12px 6px 13px; border-radius:999px; font-size:13px; font-weight:700; line-height:1;}
+.statchip svg{display:inline-block; vertical-align:-2px;}
+.statchip.done{background:var(--gold); color:#2D2D2D;}
+.statchip.pending{background:transparent; color:var(--ink-soft); border:1.5px dashed var(--line-strong); font-weight:600;}
+.statsummary{font-size:13px; color:var(--ink-soft); margin:-2px 0 8px; font-weight:600;}
+.rankcard .cond{color:var(--ink-soft);}
+.progress.full b{background:var(--gold);}
+.sheet{border-radius:16px 16px 0 0;}
+.btn-text{border:none;}
+.scr input[type=text]{padding:11px 12px; font-size:15px; color:var(--ink); min-width:0;}
+.topbar .iconbtn{width:36px;}
+.donebig{width:64px; height:64px; border-radius:50%; background:var(--brand-bg); color:var(--brand); display:flex; align-items:center; justify-content:center;}
 </style>
 </head>
 <body>
@@ -251,6 +352,29 @@ function safeReplaceHash(hash){
    Vercel 등 자체 배포 시에는 window.claude가 없으니 location.href를 그대로 써요. */
 const DEPLOY_URL = (typeof window.claude!=='undefined' && window.claude) ? 'https://claude.ai/artifact/D1jgYqfhjZzadF9QxJvG5s' : null;
 function baseUrl(){ return DEPLOY_URL || location.href.split('#')[0]; }
+
+/* ============================= 아이콘(선 아이콘 SVG) ============================= */
+const _sv=(d,sz)=>`<svg width="${sz||20}" height="${sz||20}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const IC={
+  list:sz=>_sv('<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2M9 10h6M9 14h6M9 18h3"/>',sz),
+  cal:sz=>_sv('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',sz),
+  week:sz=>_sv('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8.5 9v11M13.5 9v11"/>',sz),
+  user:sz=>_sv('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',sz),
+  pen:sz=>_sv('<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',sz),
+  trophy:sz=>_sv('<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/>',sz),
+  users:sz=>_sv('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.5 2.4 3.5 5.2"/>',sz),
+  back:sz=>_sv('<path d="M15 5l-7 7 7 7"/>',sz),
+  copy:sz=>_sv('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',sz),
+  moon:sz=>_sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',sz),
+  sun:sz=>_sv('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',sz),
+  gear:sz=>_sv('<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',sz),
+  link:sz=>_sv('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',sz),
+  device:sz=>_sv('<rect x="6" y="2.5" width="12" height="19" rx="2"/><path d="M11 18h2"/>',sz),
+  flask:sz=>_sv('<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/><path d="M7.5 14h9"/>',sz),
+  check:sz=>_sv('<path d="M5 12.5l4.5 4.5L19 7.5"/>',sz),
+  arrow:sz=>_sv('<path d="M5 12h14M13 6l6 6-6 6"/>',sz)
+};
+function icoTab(fn){return `<span class="ic ico">${fn(20)}</span>`;}
 
 /* ============================= 로컬 저장소 ============================= */
 const LS={
@@ -494,17 +618,6 @@ function cellsPerDayOf(room){return Math.round((room.timeEnd-room.timeStart)/roo
 function windowLenOf(room){return Math.max(1,Math.ceil(room.durationMin/room.unit));}
 function cellLabel(room,dayIdx,slotIdx){return minToHHMM(room.timeStart+slotIdx*room.unit);}
 
-function buildHeatmap(room,people){
-  const cpd=cellsPerDayOf(room),total=room.dates.length*cpd;
-  const heat=new Array(total).fill(0).map(()=>({count:0,golden:false}));
-  for(let idx=0;idx<total;idx++){
-    let c=0;
-    for(const p of people){if(p.cells&&p.cells[idx]==='1')c++;}
-    heat[idx].count=c;
-    heat[idx].golden=(people.length>0 && c===room.totalCount && c===people.length);
-  }
-  return heat;
-}
 function splitTitle(title){
   const s=String(title||'').trim();
   const parts=s.split(/\s*·\s*/).filter(Boolean);
@@ -516,7 +629,7 @@ function rankOf(x){
   if(x.rank)return String(x.rank).trim();
   return splitTitle(x.title||'').rank;
 }
-/* 이름으로 지정한 필참자와 참여자를 비교할 때는 이름 + 직급으로 봐요.
+/* 이름으로 지정한 필참자와 참여자를 비교할 때는 이름 + 직급(랭크)으로 봐요.
    참여자 직급에 부서가 붙어 있어도("FS · 시니어") 같은 사람으로 인식해요. */
 function reqMatch(req,p){return !!req && req.type==='name' && !!p && p.name===req.name && rankOf(p)===rankOf(req.title);}
 function reqJoined(req,people){return people.some(p=>reqMatch(req,p));}
@@ -533,6 +646,26 @@ function reqSatisfiedForWindow(room,people,idxs){
     }
   }
   return satisfied;
+}
+function attendeesForIdxs(people,idxs){
+  return people.filter(p=>idxs.every(i=>p.cells[i]==='1'));
+}
+function attendeeNamesText(room,people,idxs){
+  const atts=attendeesForIdxs(people,idxs);
+  if(!atts.length)return '없음';
+  return atts.map(p=>(isReqPerson(room,p)?'★':'')+p.name).join(', ');
+}
+/* 순위 카드를 눌렀을 때 그 시간 기준으로 가능/불가능/투표미참여를 다시 계산해요. */
+function windowBreakdown(room,people,idxs){
+  const mark=p=>(isReqPerson(room,p)?'★':'')+p.name;
+  const avail=people.filter(p=>idxs.every(i=>p.cells[i]==='1'));
+  const unavail=people.filter(p=>!idxs.every(i=>p.cells[i]==='1'));
+  const notVoted=Math.max(0,room.totalCount-people.length);
+  return {
+    avail,unavail,notVoted,
+    availText: avail.length?avail.map(mark).join(', '):'없음',
+    unavailText: unavail.length?unavail.map(mark).join(', '):'없음'
+  };
 }
 /* 최소 참석 인원: 방장이 정하지 않으면 과반(5명 → 3명) */
 function majorityOf(n){return Math.max(1,Math.floor((n||1)/2)+1);}
@@ -582,26 +715,30 @@ function computeTop3(room,people){
   }
   out.sort((a,b)=> a.tier-b.tier || b.totalAvail-a.totalAvail || cmpDate(a.date,b.date) || a.start-b.start);
   const elig=out.filter(w=>w.eligible);
-  for(let i=0;i<elig.length;i++){
-    const prev=elig[i-1];
-    elig[i].rank=(prev && prev.tier===elig[i].tier && prev.totalAvail===elig[i].totalAvail)? prev.rank : i+1;
-  }
   const top=[];
   for(const w of elig){
     if(top.length>=3)break;
     if(top.some(t=>t.date===w.date&&t.start===w.start))continue;
     top.push(w);
   }
-  const last=top[top.length-1];
-  const tiedMore=last?elig.filter(w=>w.rank===last.rank&&!top.includes(w)).length:0;
-  /* 참고 카드: 순위 규칙과 상관없이 가장 많이 모이는 시간.
-     추천 TOP 3보다 더 많이 모일 때만 보여줘서 방장이 판단할 근거를 줘요. */
+  /* 등급·인원수가 같아도 공동 순위로 묶지 않고, 이미 정렬된 순서(날짜 빠른 순 → 시간 빠른 순)
+     그대로 1위부터 차례로 번호를 매겨요. */
+  elig.forEach((w,i)=>{ w.rank=i+1; });
+  /* 참고 카드: 순위 규칙(필참자 등)엔 못 미치지만, 그 어떤 추천보다 더 많이 모이는 시간.
+     방장이 "그래도 이 시간이 낫지 않을까" 판단할 근거만 참고로 보여줘요. */
   const byCount=out.slice().sort((a,b)=> b.totalAvail-a.totalAvail || b.req-a.req || cmpDate(a.date,b.date) || a.start-b.start);
-  let ref=byCount[0]||null;
   const topMax=top.reduce((m,w)=>Math.max(m,w.totalAvail),0);
-  if(!ref || ref.totalAvail===0 || ref.totalAvail<=topMax || top.includes(ref)) ref=null;
-  if(ref) ref.missing=missingReqs(room,people,ref.idxs);
-  return {top,best:elig[0]||null,tiedMore,ref,minCount};
+  const refs=[];
+  for(const w of byCount){
+    if(refs.length>=3)break;
+    if(w.totalAvail===0||w.totalAvail<=topMax)break; // 정렬돼 있으니 여기서부턴 더 볼 필요 없어요
+    if(top.includes(w))continue;
+    if(refs.some(r=>r.date===w.date&&r.start===w.start))continue;
+    refs.push(w);
+  }
+  refs.forEach((w,i)=>{ w.refRank=i+1; w.missing=missingReqs(room,people,w.idxs); });
+  const anyOverlap=out.some(w=>w.totalAvail>0);
+  return {top,best:elig[0]||null,refs,minCount,anyOverlap};
 }
 
 /* 마감일만 지정된 경우(YYYY-MM-DD)에는 그날 하루가 끝나는 시점(다음 날 00:00)에 잠가요.
@@ -657,7 +794,7 @@ async function loadBusy(code){
     codes.delete(code); codes.delete('202610');
     const keys=new Set();
     const gp=getMyProfile();
-    if(gp&&gp.name&&gp.rank)keys.add(personKey(gp.name,profileTitle(gp)));
+    if(gp&&gp.name&&gp.dept&&gp.rank)keys.add(personKey(gp.name,profileTitle(gp)));
     if(App.me&&App.code===code)keys.add(personKey(App.me.name,App.me.title));
     const out=[];
     for(const c of codes){
@@ -694,7 +831,7 @@ async function openRoom(code,tab){
       App.me={name:gp.name,title:t};
       setIdentity(code,gp.name,t);
     } else { App.me=getIdentity(code); }
-    App.tab=tab||(code==='202610'?'results':'input');
+    App.tab=tab||(room.confirmed||code==='202610'?'results':'input');
     App.draft={pendingCells:null,name:'',title:''};
     pushRecent(code,room.name);
     App.busy=[];
@@ -746,6 +883,8 @@ function render(){
 function afterProfileRender(){
   const n=$('#p_name');
   if(n)n.oninput=e=>{ if(PD)PD.name=e.target.value; };
+  const dc=$('#p_dept_custom');
+  if(dc)dc.oninput=e=>{ if(PD){PD.deptText=e.target.value;PD.dept=e.target.value;} };
 }
 function renderRoomBody(){
   const body=$('#roomBody');
@@ -832,23 +971,28 @@ function meetingRow(item){
 function vHome(){
   let body;
   if(App.mainTab==='calendar')body=vCalendarTab();
+  else if(App.mainTab==='week')body=vWeekTab();
   else if(App.mainTab==='profile')body=vProfileTab();
   else body=vMeetingsTab();
-  return body+mainTabsHtml();
+  const ab = App.mainTab==='calendar'? ['캘린더','내 모임 한눈에']
+    : App.mainTab==='week'? ['주간 시간표','이번 주 일정']
+    : App.mainTab==='profile'? ['내 정보','프로필 · 설정'] : ['CIMO',headerDateLabel()];
+  return `<div class="appbar"><div class="brand">${ab[0]}</div><div class="sub">${esc(ab[1])}</div></div>`+body+mainTabsHtml();
 }
 function mainTabsHtml(){
   return `<div class="tabs">
-    <button class="tab ${App.mainTab==='meetings'?'on':''}" data-act="mainTab" data-v="meetings"><span class="ic">📋</span>모임</button>
-    <button class="tab ${App.mainTab==='calendar'?'on':''}" data-act="mainTab" data-v="calendar"><span class="ic">📅</span>캘린더</button>
-    <button class="tab ${App.mainTab==='profile'?'on':''}" data-act="mainTab" data-v="profile"><span class="ic">👤</span>내 정보</button>
+    <button class="tab ${App.mainTab==='meetings'?'on':''}" data-act="mainTab" data-v="meetings">${icoTab(IC.list)}모임</button>
+    <button class="tab ${App.mainTab==='calendar'?'on':''}" data-act="mainTab" data-v="calendar">${icoTab(IC.cal)}캘린더</button>
+    <button class="tab ${App.mainTab==='week'?'on':''}" data-act="mainTab" data-v="week">${icoTab(IC.week)}주간</button>
+    <button class="tab ${App.mainTab==='profile'?'on':''}" data-act="mainTab" data-v="profile">${icoTab(IC.user)}내 정보</button>
   </div>`;
 }
 function vMeetingsTab(){
   const hm=App.homeMeetings;
   if(!hm||hm.loading){
     return `<div class="scr">
-      <div class="row between" style="padding:10px 2px 4px;align-items:flex-start;">
-        <div><div class="muted" style="font-size:13px;">${headerDateLabel()}</div><h1 style="margin:2px 0 0;font-size:26px;">내 모임</h1></div>
+      <div class="row between" style="padding:2px 2px 0;align-items:center;">
+        <h1 style="margin:0;font-size:22px;font-weight:900;">내 모임</h1>
         <button class="btn btn-primary btn-sm" style="width:auto;" data-act="goCreate">+ 만들기</button>
       </div>
       <div class="empty-small" style="padding:30px 0;">불러오는 중…</div>
@@ -857,8 +1001,8 @@ function vMeetingsTab(){
   const {upcoming,ongoing,past}=hm;
   return `
   <div class="scr">
-    <div class="row between" style="padding:10px 2px 4px;align-items:flex-start;">
-      <div><div class="muted" style="font-size:13px;">${headerDateLabel()}</div><h1 style="margin:2px 0 0;font-size:26px;">내 모임</h1></div>
+    <div class="row between" style="padding:2px 2px 0;align-items:center;">
+      <h1 style="margin:0;font-size:22px;font-weight:900;">내 모임</h1>
       <button class="btn btn-primary btn-sm" style="width:auto;" data-act="goCreate">+ 만들기</button>
     </div>
     ${upcoming.length? heroCard(upcoming[0]):''}
@@ -907,13 +1051,74 @@ function calendarDayRow(item){
   const timeTxt=hasTime
     ? `${minToHHMM(room.confirmed.start)}-${minToHHMM(room.confirmed.end)}`
     : '조율 중';
-  return `<div class="roomitem" data-act="enter" data-code="${code}">
+  return `<div class="roomitem" style="cursor:default;">
     <div style="flex:1;min-width:0;">
       <div style="font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(name)}</div>
       ${hasTime?'':`<div class="muted" style="font-size:11.5px;margin-top:1px;">${(room.deadline&&room.deadline.mode!=='none')?('마감 '+dateLabel(room.deadline.value.slice(0,10))):'마감 없음'}</div>`}
     </div>
     <div class="disp" style="font-size:13px;font-weight:700;white-space:nowrap;margin-left:8px;color:${hasTime?'var(--ink)':'var(--ink-faint)'};">${timeTxt}</div>
-    <span style="color:var(--ink-faint);flex-shrink:0;margin-left:4px;">›</span>
+  </div>`;
+}
+/* ---- 주간 시간표: 월~일 요일별로, 확정된 회의를 실제 시간 위치에 맞춰 블럭으로 보여줘요 ---- */
+function mondayOf(iso){
+  const d=new Date(iso+'T00:00:00');
+  const dow=d.getDay(); // 0=일 ... 6=토
+  d.setDate(d.getDate()+(dow===0?-6:1-dow));
+  return toISODate(d);
+}
+const WEEK_PALETTE=['#D04A02','#3D74C9','#6B8F3C','#9B5FB0','#C9873D','#2F8F6E','#B23F5E'];
+function colorForCode(code){
+  let h=0; for(let i=0;i<code.length;i++)h=(h*31+code.charCodeAt(i))|0;
+  return WEEK_PALETTE[Math.abs(h)%WEEK_PALETTE.length];
+}
+function vWeekTab(){
+  const hm=App.homeMeetings;
+  if(!hm||hm.loading)return `<div class="scr"><div class="empty-small" style="padding:30px 0;">불러오는 중…</div></div>`;
+  if(!App.weekRef)App.weekRef=todayISO();
+  const monday=mondayOf(App.weekRef);
+  const days=[];for(let i=0;i<7;i++)days.push(addDaysISO(monday,i));
+  const byDate={};
+  let any=false;
+  hm.upcoming.concat(hm.past).forEach(item=>{
+    const c=item.room&&item.room.confirmed;
+    if(c&&days.includes(c.date)){(byDate[c.date]=byDate[c.date]||[]).push(item);any=true;}
+  });
+  /* 00:00~24:00 하루 전체를, 스크롤 없이 한 화면에 다 보여줘요. */
+  const minMin=0, maxMin=24*60;
+  const totalMin=maxMin-minMin;
+  const heightPx=560;
+  const hourMarks=[];for(let h=0;h<=24;h++)hourMarks.push(h);
+  const today=todayISO();
+  const dayCols=days.map(d=>{
+    const items=(byDate[d]||[]).filter(it=>it.room.confirmed.start<maxMin && it.room.confirmed.end>minMin);
+    const blocks=items.map(it=>{
+      const c=it.room.confirmed;
+      const top=Math.max(0,(c.start-minMin)/totalMin*100);
+      const h=Math.max(3,(Math.min(maxMin,c.end)-Math.max(minMin,c.start))/totalMin*100);
+      const bg=colorForCode(it.code);
+      return `<div class="wk-block" style="top:${top}%;height:${h}%;background:${bg};" title="${esc(it.name)} ${minToHHMM(c.start)}~${minToHHMM(c.end)}"><div class="wk-block-name">${esc(it.name)}</div></div>`;
+    }).join('');
+    return `<div class="wk-day ${d===today?'today':''}">${blocks}</div>`;
+  }).join('');
+  const hourRows=hourMarks.map(h=>`<div class="wk-hourlbl" style="top:${(h*60-minMin)/totalMin*100}%;">${pad(h)}:00</div>`).join('');
+  const dayHeads=days.map(d=>{
+    const dt=new Date(d+'T00:00:00');
+    return `<div class="wk-headcell ${d===today?'today':''}">${DOW[dt.getDay()]}<span class="wk-headdate">${dt.getDate()}</span></div>`;
+  }).join('');
+  return `<div class="scr">
+    <div class="row" style="justify-content:center;align-items:center;gap:16px;padding:4px 0 10px;">
+      <button class="iconbtn" data-act="weekNav" data-v="-7">‹</button>
+      <b style="font-size:14px;">${monday.slice(5).replace('-','/')} ~ ${days[6].slice(5).replace('-','/')}</b>
+      <button class="iconbtn" data-act="weekNav" data-v="7">›</button>
+    </div>
+    <div class="card" style="padding:8px 10px 12px;">
+      <div class="wk-headrow"><div class="wk-hourcol"></div><div class="wk-headdays">${dayHeads}</div></div>
+      <div class="wk-wrap" style="height:${heightPx}px;">
+        <div class="wk-hourcol">${hourRows}</div>
+        <div class="wk-days">${dayCols}</div>
+      </div>
+    </div>
+    ${!any?'<div class="muted" style="text-align:center;padding:10px 0;">이번 주에 확정된 모임이 없어요</div>':''}
   </div>`;
 }
 function vCalendarTab(){
@@ -940,7 +1145,7 @@ function vCalendarTab(){
   }
   const list = App.calSelectedDate ? marks[App.calSelectedDate] : null;
   return `<div class="scr">
-    <div class="row between" style="padding:10px 2px 4px;"><h1 style="margin:0;font-size:22px;">캘린더</h1></div>
+    
     <div class="card">
       <div class="cal-head"><button class="iconbtn" data-act="calNavMain" data-v="-1">‹</button><b>${y}년 ${m+1}월</b><button class="iconbtn" data-act="calNavMain" data-v="1">›</button></div>
       <div class="cal-grid">${DOW.map(d=>`<div class="cal-dow">${d}</div>`).join('')}${cells}</div>
@@ -997,15 +1202,15 @@ function vProfileTab(){
     </div>`;
   }
   return `<div class="scr">
-    <div class="row between" style="padding:10px 2px 4px;"><h1 style="margin:0;font-size:22px;">내 정보</h1></div>
+    
     ${profileBlock}
     <div class="card row between">
       <span>테마</span>
-      <button class="btn btn-ghost btn-sm" data-act="theme">${getTheme()==='dark'?'☀ 라이트 모드로':'🌙 다크 모드로'}</button>
+      <button class="btn btn-ghost btn-sm" data-act="theme">${getTheme()==='dark'?'라이트 모드로':'다크 모드로'}</button>
     </div>
     <div class="card">
       <div class="sectitle">저장 상태</div>
-      <div class="muted" style="margin-top:6px;">${saveMode==='shared'?'🔗 공유 저장 모드 — 링크를 받은 누구나 같은 데이터를 봐요':'💾 미리보기 모드 — 지금은 이 기기에만 저장돼요'}</div>
+      <div class="muted" style="margin-top:6px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:${saveMode==='shared'?'var(--ok)':'var(--ink-faint)'};"></span>${saveMode==='shared'?'공유 저장 모드 — 링크를 받은 누구나 같은 데이터를 봐요':'미리보기 모드 — 지금은 이 기기에만 저장돼요'}</div>
     </div>
     <div class="muted" style="text-align:center;padding:30px 0 0;">프로필, 알림 등 나머지 구성은 다음 작업에서 채울게요.</div>
   </div>`;
@@ -1021,7 +1226,7 @@ function resetDraft(){
     durMode:'2h',durCustomH:1,durCustomM:0,
     deadlineMode:'auto',deadlineValue:null,
     total:1, minCount:null,
-    required:[], reqName:'', reqRank:null,
+    required:[],reqName:'',reqRank:null,
     pw:''
   });
 }
@@ -1032,7 +1237,7 @@ function defaultDeadline(){
 }
 function vCreate(){
   return `
-  <div class="topbar"><button class="iconbtn" data-act="goHome">←</button><div class="title">회의 만들기</div></div>
+  <div class="topbar"><button class="iconbtn" data-act="goHome" aria-label="뒤로">${IC.back(22)}</button><div class="title">회의 만들기</div></div>
   <div class="scr">
     <div class="field">
       <label>모임 이름</label>
@@ -1092,6 +1297,7 @@ function vCreate(){
       <div class="row between"><span class="sectitle">총 인원</span>
         <div class="stepper"><button data-act="total" data-v="-1">−</button><b id="totalNum">${C.total}</b><button data-act="total" data-v="1">+</button></div>
       </div>
+      <hr class="sep">
       <div class="row between"><span class="sectitle">최소 참석 인원</span>
         <div class="stepper"><button data-act="minc" data-v="-1">−</button><b>${C.minCount==null?majorityOf(C.total):C.minCount}</b><button data-act="minc" data-v="1">+</button></div>
       </div>
@@ -1102,7 +1308,7 @@ function vCreate(){
       <input type="text" id="f_reqname" placeholder="이름(선택)" value="${esc(C.reqName||'')}" style="border:1px solid var(--line-strong);background:var(--bg-elev);color:var(--ink);border-radius:var(--radius-sm);padding:11px 12px;font-size:15px;width:100%;">
       <div class="segrow">${RANKS.map(r=>`<button class="seg ${C.reqRank===r?'on':''}" data-act="reqRank" data-v="${r}">${r}</button>`).join('')}</div>
       <button class="btn btn-ghost btn-sm" data-act="addReq" style="align-self:flex-start;">필참자 추가</button>
-      <div class="muted">이름 없이 직급만 넣으면 '그 직급 중 1명'으로 처리돼요.</div>
+      <div class="muted">이름 없이 직급만 고르면 '그 직급 중 1명'으로 처리돼요.</div>
     </div>
 
     <div class="field">
@@ -1111,7 +1317,8 @@ function vCreate(){
     </div>
 
     <div id="createErr" class="err"></div>
-    <button class="btn btn-primary" data-act="submitCreate">방 만들기</button>
+    <button class="btn btn-primary" data-act="submitCreate">링크 만들기 ${IC.arrow(18)}</button>
+    <div class="muted" style="text-align:center;margin-top:-8px;font-size:12px;">로그인 없이 링크 하나로 공유</div>
   </div>`;
 }
 function renderCreatorAsManager(){
@@ -1177,6 +1384,7 @@ function afterCreateRender(){
   const te=$('#f_tend');if(te)te.onchange=e=>{C.timeEnd=+e.target.value;};
   const dl=$('#f_deadline');if(dl)dl.onchange=e=>{C.deadlineValue=e.target.value;};
   const pw=$('#f_pw');if(pw)pw.oninput=e=>C.pw=e.target.value;
+  const rq=$('#f_reqname');if(rq)rq.oninput=e=>C.reqName=e.target.value;
 }
 
 /* ---------- 방 만들기 액션 ---------- */
@@ -1252,8 +1460,8 @@ function vCreated(){
   const invite=`📅 회의 시간 투표에 참여해주세요!\n아래 링크를 누르면 바로 들어와서 가능한 시간을 표시할 수 있어요.\n${link}\n(링크가 안 열리면 코드 ${code}로 직접 입장해주세요)`;
   return `
   <div class="scr" style="align-items:center;text-align:center;padding-top:60px;">
-    <div style="font-size:40px;">✅</div>
-    <h1>방이 만들어졌어요</h1>
+    <div class="donebig">${IC.check(32)}</div>
+    <h1 style="margin:0;font-size:22px;font-weight:900;">방이 만들어졌어요</h1>
     <div class="disp" style="font-size:36px;font-weight:700;letter-spacing:.1em;color:var(--brand-ink);">${code}</div>
     <div class="muted">이 코드로 다른 사람이 입장할 수 있어요</div>
     <div class="card" style="width:100%;text-align:left;white-space:pre-wrap;font-size:13.5px;color:var(--ink-soft);">${esc(invite)}</div>
@@ -1266,26 +1474,26 @@ function vCreated(){
 function vRoom(){
   return `
   <div class="topbar">
-    <button class="iconbtn" data-act="goHome">←</button>
+    <button class="iconbtn" data-act="goHome" aria-label="뒤로">${IC.back(22)}</button>
     <div class="title">${esc(App.room.name)}</div>
     <button class="star ${isFav(App.code)?'on':''}" data-act="fav">☆</button>
-    <button class="roomchip" data-act="copyInvite" data-code="${App.code}"><b>${App.code}</b> 📋</button>
-    <span title="${saveMode==='shared'?'공유 저장 모드':'미리보기 모드'}" style="font-size:14px;">${App.code==='202610'?'🧪':(saveMode==='shared'?'🔗':'💾')}</span>
-    <button class="iconbtn" data-act="theme">${getTheme()==='dark'?'☀':'🌙'}</button>
-    <button class="iconbtn" data-act="hostMenu">⚙</button>
+    <button class="roomchip" data-act="copyInvite" data-code="${App.code}"><b>${App.code}</b> <span class="ico">${IC.copy(14)}</span></button>
+    <span class="modeic" title="${App.code==='202610'?'예시 방':(saveMode==='shared'?'공유 저장 모드':'미리보기 모드')}">${App.code==='202610'?IC.flask(17):(saveMode==='shared'?IC.link(17):IC.device(17))}</span>
+    <button class="iconbtn" data-act="theme" aria-label="테마 전환">${getTheme()==='dark'?IC.sun(19):IC.moon(19)}</button>
+    <button class="iconbtn" data-act="hostMenu" aria-label="방 설정">${IC.gear(19)}</button>
   </div>
   <div id="roomBody">${vRoomBody()}</div>
   <div class="tabs">
-    <button class="tab ${App.tab==='input'?'on':''}" data-act="tab" data-v="input"><span class="ic">📝</span>시간입력</button>
-    <button class="tab ${App.tab==='results'?'on':''}" data-act="tab" data-v="results"><span class="ic">🏆</span>추천결과</button>
-    <button class="tab ${App.tab==='status'?'on':''}" data-act="tab" data-v="status"><span class="ic">👥</span>참여현황</button>
+    ${App.room.confirmed?'':`<button class="tab ${App.tab==='input'?'on':''}" data-act="tab" data-v="input">${icoTab(IC.pen)}시간입력</button>`}
+    <button class="tab ${App.tab==='results'?'on':''}" data-act="tab" data-v="results">${icoTab(IC.trophy)}추천결과</button>
+    <button class="tab ${App.tab==='status'?'on':''}" data-act="tab" data-v="status">${icoTab(IC.users)}참여현황</button>
   </div>`;
 }
 function vRoomBody(){
   const room=App.room;
   let banner='';
   if(room.confirmed){
-    banner=`<div class="banner-gold">✅ 일정이 확정되었습니다<br>${dateLabel(room.confirmed.date)} ${minToHHMM(room.confirmed.start)}~${minToHHMM(room.confirmed.end)}</div>`;
+    banner=`<div class="banner-gold">일정이 확정되었습니다<br>${dateLabel(room.confirmed.date)} ${minToHHMM(room.confirmed.start)}~${minToHHMM(room.confirmed.end)}${room.confirmed.attendees?`<div style="font-weight:400;font-size:12.5px;margin-top:4px;">참여: ${esc(room.confirmed.attendees.map(a=>a.name).join(', ')||'없음')}</div>`:''}</div>`;
   } else {
     const lock=isLocked(room);
     if(lock)banner=`<div class="banner-lock">${lock}</div>`;
@@ -1313,7 +1521,13 @@ function vInput(){
       <button class="btn btn-primary" style="margin-top:12px;" data-act="checkId">다음</button>
     </div>`;
   }
-  if(lockMsg)return `<div class="muted">입력이 잠겨 있어요. 참여 현황 탭에서 결과를 확인해주세요.</div>`;
+  if(lockMsg){
+    const sec=renderTop3Section(room,people);
+    return `<div class="banner-lock">${lockMsg}</div>
+      ${sec.html}
+      <div class="sectitle" style="padding:0 2px;">참여 현황</div>
+      ${renderParticipationChips()}`;
+  }
   const cpd=cellsPerDayOf(room);
   const existing=people.find(p=>p.id===personKey(App.me.name,App.me.title));
   if(!App.draft.pendingCells)App.draft.pendingCells=(existing?existing.cells:'0'.repeat(room.dates.length*cpd)).split('');
@@ -1349,67 +1563,83 @@ function renderInputTable(){
 }
 
 /* ---- 추천 결과 ---- */
-function vResults(){
+/* 확정/마감 후 시간입력 화면에서 바로 보여주는 참여 현황 칩: 제출한 사람은 체크,
+   아직 안 낸 필참자는 흐리게 "…"로 표시해요. 필참자는 ★ 표시. */
+function renderParticipationChips(){
   const room=App.room,people=App.people;
-  if(!people.length)return '<div class="muted" style="text-align:center;padding:40px 0;">아직 입력한 사람이 없어요</div>';
-  const {top,tiedMore,ref,minCount}=computeTop3(room,people);
-  if(!top.length&&!ref)return `<div class="muted" style="text-align:center;padding:40px 0;">겹치는 시간이 없어요 😢</div>`;
-  const heat=buildHeatmap(room,people);
-  const refCard=ref?`<div class="card" data-act="hlWindow" data-idxs="${ref.idxs.join(',')}" style="border-style:dashed;cursor:pointer;display:flex;flex-direction:column;gap:4px;">
-      <div style="font-size:12px;font-weight:700;color:var(--ink-soft);">참고 · 가장 많이 모이는 시간</div>
-      <div style="font-weight:700;">${dateLabel(ref.date)} ${minToHHMM(ref.start)}~${minToHHMM(ref.end)}</div>
-      <div class="muted">전체 ${ref.totalAvail}/${room.totalCount} · 필참자 ${ref.req}/${room.required.length}${ref.missing.length?` · <span style="color:var(--danger);">${esc(ref.missing.join(', '))} 불참</span>`:''}</div>
-      <div class="muted" style="font-size:12px;">${ref.missing.length?"필참자 조건 때문에 추천에서는 빠졌어요. 필참자에게 이 시간 조정이 가능한지 물어보세요.":"최소 참석 인원("+minCount+"명)보다 적어서 추천에서는 빠졌어요."}</div>
-    </div>`:'';
+  const pendingReq=room.required.filter(r=>r.type==='name'&&!reqJoined(r,people));
+  const restCount=Math.max(0,room.totalCount-people.length-pendingReq.length);
+  const chips=[
+    ...people.map(p=>`<span class="statchip done">${isReqPerson(room,p)?'★ ':''}${esc(p.name)} ${esc(p.title)} ${IC.check(13)}</span>`),
+    ...pendingReq.map(r=>`<span class="statchip pending">★ ${esc(r.name)} ${esc(r.title)}</span>`),
+    ...(restCount>0?[`<span class="statchip pending">그 외 ${restCount}명</span>`]:[])
+  ];
+  return `<div class="statsummary">${people.length}/${room.totalCount}명 입력 완료</div>
+    <div class="chiprow">${chips.join('')||'<span class="muted">아직 없어요</span>'}</div>`;
+}
+/* TOP3 순위 카드만 뽑아내는 부분 — 확정/마감 후 간단히 보여줄 때나,
+   추천결과 탭에서 자세히 보여줄 때나 똑같이 써요. */
+function renderTop3Section(room,people){
+  if(!people.length)return {html:'<div class="muted" style="text-align:center;padding:40px 0;">아직 입력한 사람이 없어요</div>',top:[],ok:false};
+  const {top,best,refs,minCount,anyOverlap}=computeTop3(room,people);
+  if(!anyOverlap)return {html:'<div class="muted" style="text-align:center;padding:40px 0;">겹치는 시간이 없어요</div>',top:[],ok:false};
+  // 확정된 상태에서 '일정변경하기'를 눌러 비밀번호를 통과하면 변경 모드가 켜져요 (순위 안에서만 고를 수 있음)
+  const changeMode = !!room.confirmed && App._changeMode===App.code;
+  const confirmedBtns = (room.confirmed && !changeMode) ? `<div class="row" style="gap:8px;justify-content:flex-start;margin-bottom:14px;">
+      <button class="btn btn-ghost btn-sm" data-act="sheetChangeSchedule">일정변경하기</button>
+      <button class="btn btn-ghost btn-sm" data-act="sheetDeleteSchedule">일정삭제하기</button>
+    </div>` : '';
   if(!top.length){
-    return `<div class="card" style="text-align:center;">
-      <div style="font-weight:700;margin-bottom:4px;">추천 기준을 만족하는 시간이 없어요</div>
-      <div class="muted">필참자가 참석하고 ${minCount}명 이상 모이는 시간을 찾지 못했어요.</div>
-    </div>
-    ${refCard}
-    <div class="sectitle">히트맵 (진하고 황금색일수록 많은 인원 가능)</div>
-    <div class="gridwrap">${renderHeatTable(heat)}</div>
-    <div id="cellPanel"></div>`;
+    const refList=renderRefList(room,refs,changeMode);
+    const topBtns = confirmedBtns;
+    return {html:`${topBtns}<div class="muted" style="text-align:center;padding:20px 0 8px;">조건(필참자·최소 ${minCount}명)에 맞는 시간이 없어요</div>${refList}`,top:[],refs,ok:true};
   }
   if(top[0] && top[0].totalAvail===room.totalCount && !getConfetti(App.code).golden){
     setConfettiFlag(App.code,'golden');setTimeout(fireConfetti,50);
   }
   const cards=top.map((w,i)=>{
     const golden=w.totalAvail===room.totalCount && w.req===room.required.length;
-    const tied=top.filter(t=>t.rank===w.rank).length>1;
-    return `<div class="rankcard r${Math.min(w.rank,3)}" data-act="hlWindow" data-idxs="${w.idxs.join(',')}">
-      <div class="num disp" style="display:flex;flex-direction:column;align-items:center;line-height:1;">${w.rank}${tied?'<span style="font-family:\'Noto Sans KR\';font-size:10px;font-weight:700;margin-top:4px;">공동</span>':''}</div>
-      <div class="mid">
-        <div class="range">${dateLabel(w.date)} ${minToHHMM(w.start)}~${minToHHMM(w.end)} ${golden?'🏆':''}</div>
-        <div class="cond">필참자 ${w.req}/${room.required.length} · 전체 ${w.totalAvail}/${room.totalCount}</div>
-      </div>
+    const action = changeMode ? `data-act="selectRank" data-i="${i}"` : `data-act="hlWindow" data-idxs="${w.idxs.join(',')}"`;
+    return `<div class="rankcard r${Math.min(w.rank,3)}" ${action} style="cursor:pointer;">
+      <div class="range"><span class="rbadge">${w.rank}순위</span><span>${dateLabel(w.date)} ${minToHHMM(w.start)}~${minToHHMM(w.end)}</span>${golden?`<span class="ico" style="color:var(--gold-ink);" title="전원 가능">${IC.trophy(16)}</span>`:''}</div>
+      <div class="cond">필참자 ${w.req}/${room.required.length} · 전체 ${w.totalAvail}/${room.totalCount}</div>
     </div>`;
   }).join('');
-  return `
-  <div style="display:flex;flex-direction:column;gap:10px;">${cards}</div>
-  ${tiedMore>0?`<div class="muted" style="margin-top:-8px;padding:0 4px;">같은 ${top[top.length-1].rank}위 시간이 ${tiedMore}개 더 있어요. 히트맵에서 확인해보세요.</div>`:''}
-  <div class="muted" style="margin-top:-8px;padding:0 4px;font-size:12px;">필참자가 참석하고 최소 ${minCount}명 이상 모이는 시간만 추천해요.</div>
-  ${refCard}
-  <div class="sectitle">히트맵 (진하고 황금색일수록 많은 인원 가능)</div>
-  <div class="gridwrap">${renderHeatTable(heat)}</div>
-  <div id="cellPanel"></div>`;
+  App._rankSel=null;
+  const topBtns = confirmedBtns;
+  const changeBar = changeMode ? `<div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
+    <div class="muted" style="font-size:12.5px;">아래 순위 중에서 변경할 순위를 선택해주세요.</div>
+    <button class="btn btn-primary btn-sm" id="rankChangeBtn" style="width:100%;" data-act="applyRankChange" disabled>순위를 선택해주세요</button>
+    <button class="btn-text" data-act="cancelChange">취소</button>
+  </div>` : '';
+  // 참고 순위는 조건을 충족하는 1~3순위가 하나도 없을 때만 보여줘요
+  const html=`${topBtns}<div style="display:flex;flex-direction:column;gap:10px;">${cards}</div>${changeBar}<div id="rankPanel" style="margin-top:2px;"></div>`;
+  return {html,top,refs,ok:true};
 }
-function renderHeatTable(heat){
-  const room=App.room;const cpd=cellsPerDayOf(room);
-  let head='<tr><th class="timecol-h"></th>'+room.dates.map(d=>`<th>${dateLabel(d)}</th>`).join('')+'</tr>';
-  let rows='';
-  for(let s=0;s<cpd;s++){
-    rows+=`<tr><td class="timecol">${minToHHMM(room.timeStart+s*room.unit)}</td>`;
-    room.dates.forEach((d,dIdx)=>{
-      const idx=dIdx*cpd+s;const h=heat[idx];
-      const ratio=room.totalCount? Math.min(1,h.count/room.totalCount):0;
-      const bg=h.golden? 'var(--gold)': (h.count>0? `rgba(255,106,43,${0.15+0.7*ratio})`:'');
-      rows+=`<td><div class="cell ${h.golden?'gold':''}" data-act="cellInfo" data-idx="${idx}" style="${bg?`background:${bg};`:''}">${h.count>0?`<span class="heat-count">${h.count}</span>`:''}</div></td>`;
-    });
-    rows+='</tr>';
-  }
-  return `<table class="timetable"><thead>${head}</thead><tbody>${rows}</tbody></table>`;
+function renderRefList(room,refs,changeMode){
+  if(!refs||!refs.length)return '';
+  App._refSel=null; // 렌더할 때마다 참고 순위 선택 초기화
+  // 확정 전이거나, 확정 후 변경 모드일 때만 고를 수 있어요
+  const selectable=!room.confirmed || !!changeMode;
+  const cards=refs.map((w,idx)=>{
+    const attrs=selectable?`data-act="selectRef" data-i="${idx}" style="padding:12px 14px;border-style:dashed;cursor:pointer;"`:`style="padding:12px 14px;border-style:dashed;"`;
+    return `<div class="card refcard" ${attrs}>
+      <div class="row between"><b style="font-size:13px;">참고 ${w.refRank}순위 · 더 많이 모이는 시간</b></div>
+      <div style="margin-top:4px;font-weight:700;">${dateLabel(w.date)} ${minToHHMM(w.start)}~${minToHHMM(w.end)}</div>
+      <div class="muted" style="margin-top:3px;font-size:12.5px;">전체 ${w.totalAvail}/${room.totalCount}명 가능${w.missing&&w.missing.length?` · 다만 ${esc(w.missing.join(', '))} 참석이 어려워요`:''}</div>
+    </div>`;
+  }).join('');
+  const btn=selectable?`<button class="btn btn-primary btn-sm" id="refConfirmBtn" style="width:100%;margin-top:4px;" data-act="confirmWithRef" disabled>참고 순위를 선택해주세요</button>${changeMode?`<button class="btn-text" data-act="cancelChange">취소</button>`:''}`:'';
+  return `<div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">${cards}${btn}</div>`;
 }
+function vResults(){
+  const room=App.room,people=App.people;
+  const sec=renderTop3Section(room,people);
+  return sec.html;
+}
+/* 날짜마다 한 줄짜리 가로 타임라인 바 하나로 보여줘요 — 시간대별로 칸이 잔뜩 쌓인
+   표보다, 하루에 한 줄씩이 한눈에 비교하기 훨씬 쉬워서요. */
+
 
 /* ---- 참여 현황 ---- */
 function vStatus(){
@@ -1418,7 +1648,6 @@ function vStatus(){
   const pct=Math.min(100,Math.round(done/total*100));
   const full=done>=total;
   const doneNames=people.map(p=>`${p.name}·${p.title}`);
-  const reqDone=room.required.filter(r=>r.type==='name').map(r=>r.name+'|'+r.title);
   const pendingReq=room.required.filter(r=>r.type==='name'&&!reqJoined(r,people));
   const restCount=Math.max(0,total-done-pendingReq.length);
   const link=baseUrl()+'#room='+App.code;
@@ -1433,7 +1662,7 @@ function vStatus(){
     const isManager = App.me && room.manager && App.me.name===room.manager.name && App.me.title===room.manager.title;
     if(!full && !isManager)return '';
     const msg = full
-      ? '🎉 모든 인원이 입력을 완료했어요. 이제 일정을 확정할 수 있어요.'
+      ? '모든 인원이 입력을 완료했어요. 이제 일정을 확정할 수 있어요.'
       : '담당자님, 아직 전원이 입력하진 않았지만 지금 바로 일정을 확정할 수도 있어요.';
     return `<div class="banner-gold" style="display:flex;flex-direction:column;gap:10px;">
       <div>${msg}</div>
@@ -1510,15 +1739,20 @@ const globalActions={
     render();
   },
   calPick:(el,v)=>{App.calSelectedDate=(App.calSelectedDate===v?null:v);render();},
+  weekNav:(el,v)=>{ if(!App.weekRef)App.weekRef=todayISO(); App.weekRef=addDaysISO(App.weekRef,+v); render(); },
   profDept:(el,v)=>{
     if(!PD)initProfileDraft();
     syncDeptText();
-    if(v==='__custom'){PD.deptCustom=!PD.deptCustom;if(!PD.deptCustom){PD.dept=null;}}
-    else{PD.deptCustom=false;PD.dept=(PD.dept===v?null:v);}
+    if(v==='__custom'){
+      PD.deptCustom=!PD.deptCustom;
+      PD.dept = PD.deptCustom ? (PD.deptText||'') : null;
+    }else{
+      PD.deptCustom=false;
+      PD.dept = (PD.dept===v)? null : v;
+    }
     render();
-    if(PD.deptCustom){const el=$('#p_dept_custom');if(el)el.focus();}
   },
-  profRank:(el,v)=>{if(!PD)initProfileDraft();syncDeptText();PD.rank=v;render();},
+  profRank:(el,v)=>{if(!PD)initProfileDraft();PD.rank=v;render();},
   editProfile:()=>{initProfileDraft();profileEditMode=true;render();},
   gotoProfileFromCreate:async()=>{
     profileEditMode=true;initProfileDraft();App.mainTab='profile';
@@ -1529,11 +1763,10 @@ const globalActions={
     if(!PD)initProfileDraft();
     const nameEl=$('#p_name');
     if(nameEl)PD.name=nameEl.value.trim();
+    const dcEl=$('#p_dept_custom');
+    if(dcEl)PD.dept=dcEl.value.trim()||null;
     const errEl=$('#profErr');
     if(!PD.name){errEl.textContent='이름을 입력해주세요.';return;}
-    syncDeptText();
-    const dept = PD.deptCustom ? (PD.deptText||'').trim().replace(/·/g,' ') : PD.dept;
-    PD.dept = dept || null;
     if(!PD.rank){errEl.textContent='직급을 선택해주세요.';return;}
     setMyProfile(PD.name,PD.dept,PD.rank);
     profileEditMode=false;
@@ -1592,25 +1825,26 @@ const globalActions={
     toast('저장했어요 ✅');
   },
   hlWindow:(el)=>{
-    $$('.cell.hl').forEach(c=>c.classList.remove('hl'));
-    el.getAttribute('data-idxs').split(',').forEach(i=>{const c=$(`.cell[data-idx="${i}"]`);if(c)c.classList.add('hl');});
-    el.scrollIntoView({block:'nearest'});
-    const first=$(`.cell[data-idx="${el.getAttribute('data-idxs').split(',')[0]}"]`);
-    if(first)first.scrollIntoView({block:'center'});
-  },
-  cellInfo:(el)=>{
-    const idx=+el.getAttribute('data-idx');
-    const avail=App.people.filter(p=>p.cells[idx]==='1');
-    const unavail=App.people.filter(p=>p.cells[idx]==='0');
-    const notEntered=App.room.required.filter(r=>r.type==='name'&&!reqJoined(r,App.people));
-    function mark(p){return isReqPerson(App.room,p)?'★ ':'';}
-    const html=`<div class="card namepanel" style="margin-top:10px;">
-      <div class="grp"><b>가능 (${avail.length})</b>${avail.map(p=>`<div class="nm">${mark(p)}${esc(p.name)}·${esc(p.title)}</div>`).join('')||'<div class="muted">없음</div>'}</div>
-      <div class="grp"><b>불가능 (${unavail.length})</b>${unavail.map(p=>`<div class="nm">${mark(p)}${esc(p.name)}·${esc(p.title)}</div>`).join('')||'<div class="muted">없음</div>'}</div>
-      <div class="grp"><b>미입력</b>${notEntered.map(p=>`<div class="nm">★ ${esc(p.name)}·${esc(p.title)}</div>`).join('')||'<div class="muted">없음</div>'}</div>
+    const idxs=el.getAttribute('data-idxs').split(',').map(Number);
+    const panel=$('#rankPanel');
+    if(!panel)return;
+    $$('.rankcard').forEach(c=>c.classList.remove('selected'));
+    $$('.refcard').forEach(c=>c.classList.remove('selected'));
+    App._refSel=null;
+    const rb=$('#refConfirmBtn'); if(rb){rb.disabled=true;rb.textContent='참고 순위를 선택해주세요';}
+    el.classList.add('selected');
+    const bd=windowBreakdown(App.room,App.people,idxs);
+    panel.innerHTML=`<div class="card" style="padding:14px;display:flex;flex-direction:column;gap:10px;">
+      <div class="statrow">
+        <div class="statblock ok"><div class="statnum">${bd.avail.length}</div><div class="statlbl">가능인원</div></div>
+        <div class="statblock bad"><div class="statnum">${bd.unavail.length}</div><div class="statlbl">불가능인원</div></div>
+        <div class="statblock pend"><div class="statnum">${bd.notVoted}</div><div class="statlbl">투표미참여</div></div>
+      </div>
+      <div class="muted" style="font-size:12.5px;">가능: ${esc(bd.availText)}</div>
+      ${bd.unavail.length?`<div class="muted" style="font-size:12.5px;">불가능: ${esc(bd.unavailText)}</div>`:''}
     </div>`;
-    $('#cellPanel').innerHTML=html;
   },
+
   hostMenu:()=>{
     openSheet(`<h3>방장 메뉴</h3>
       <button class="btn btn-ghost" data-act="sheetConfirm">${App.room.confirmed?'확정 취소':'일정 확정'}</button>
@@ -1622,49 +1856,153 @@ const globalActions={
     if(App.room.confirmed){askPassword(async()=>{
       App.room.confirmed=null;await Store.setRoom(App.code,App.room);closeSheet();render();toast('확정을 취소했어요');
     });return;}
-    askPassword(()=>{
-      const room=App.room;
-      const {top}=computeTop3(room,App.people);
-      App._top3=top;
-      const opts= top.map((w,i)=>`<button class="btn btn-ghost" data-act="doConfirm" data-i="${i}">${w.rank}순위${top.filter(t=>t.rank===w.rank).length>1?'(공동)':''} · ${dateLabel(w.date)} ${minToHHMM(w.start)}~${minToHHMM(w.end)}</button>`).join('');
-      const wl=windowLenOf(room),cpd=cellsPerDayOf(room);
-      let startOpts='';
-      for(let s=0;s+wl<=cpd;s++){ const t=room.timeStart+s*room.unit; startOpts+=`<option value="${t}">${minToHHMM(t)}~${minToHHMM(t+wl*room.unit)}</option>`; }
-      openSheet(`<h3>확정할 일정을 선택하세요</h3>
-        ${opts||'<div class="muted">추천 결과가 없어요</div>'}
-        <hr class="sep">
-        <div class="sectitle">또는 직접 선택</div>
-        <div class="row">
-          <select id="manualDate">${room.dates.map(d=>`<option value="${d}">${dateLabel(d)}</option>`).join('')}</select>
-          <select id="manualStart">${startOpts}</select>
-        </div>
-        <button class="btn btn-ghost" data-act="doConfirmManual">이 시간으로 확정</button>
-        <button class="btn-text" data-act="closeSheet">닫기</button>`);
-    });
+    askPassword(()=>{ openSchedulePicker('확정할 일정을 선택하세요','이 시간으로 확정'); });
+  },
+  // 일정변경하기 → 비밀번호 → 변경 모드(순위 카드 선택 가능) → 순위 선택 → 일정 변경하기
+  sheetChangeSchedule:()=>{
+    askPassword(()=>{ App._changeMode=App.code; closeSheet(); render(); });
+  },
+  cancelChange:()=>{ App._changeMode=null; render(); },
+  selectRank:(el)=>{
+    const idx=+el.getAttribute('data-i');
+    App._rankSel=idx;
+    $$('.rankcard').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    const {top}=computeTop3(App.room,App.people);
+    const w=top[idx];
+    const btn=$('#rankChangeBtn');
+    if(btn&&w){btn.disabled=false;btn.textContent=`${w.rank}순위로 일정 변경하기`;}
+  },
+  applyRankChange:async()=>{
+    if(App._changeMode!==App.code||App._rankSel==null){toast('변경할 순위를 먼저 선택해주세요');return;}
+    const {top}=computeTop3(App.room,App.people);
+    const w=top[App._rankSel];
+    if(w){await doConfirmInternal(w);}
   },
   doConfirm:async(el)=>{
+    const wasConfirmed=!!App.room.confirmed;
     const w=App._top3[+el.getAttribute('data-i')];
-    App.room.confirmed={date:w.date,start:w.start,end:w.end};
+    const attendees=attendeesForIdxs(App.people,w.idxs).map(p=>({name:p.name,title:p.title}));
+    App.room.confirmed={date:w.date,start:w.start,end:w.end,attendees};
     await Store.setRoom(App.code,App.room);
     closeSheet();render();
     if(!getConfetti(App.code).confirmed){setConfettiFlag(App.code,'confirmed');fireConfetti();}
-    toast('일정을 확정했어요 🎉');
+    toast(wasConfirmed?'일정을 변경했어요 ✅':'일정을 확정했어요 🎉');
+  },
+  selectRef:(el)=>{
+    const idx=+el.getAttribute('data-i');
+    App._refSel=idx;
+    $$('.refcard').forEach(c=>c.classList.remove('selected'));
+    $$('.rankcard').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    const panel=$('#rankPanel'); if(panel)panel.innerHTML='';
+    const btn=$('#refConfirmBtn');
+    if(btn){
+      const {refs}=computeTop3(App.room,App.people);
+      const w=refs[idx];
+      btn.disabled=false;
+      const vb=App.room.confirmed?'변경':'확정';
+      btn.textContent=w?`참고 ${w.refRank}순위로 일정 ${vb}하기`:`일정 ${vb}하기`;
+    }
+  },
+  confirmWithRef:async()=>{
+    if(App._refSel==null){toast('참고 순위를 먼저 선택해주세요');return;}
+    const idx=App._refSel;
+    const run=async()=>{
+      const {refs}=computeTop3(App.room,App.people);
+      const w=refs[idx];
+      if(w){await doConfirmInternal(w);}
+    };
+    // 변경 모드는 이미 비밀번호를 통과했으니 바로 적용, 처음 확정은 비밀번호 확인
+    if(App.room.confirmed&&App._changeMode===App.code){await run();return;}
+    askPassword(run);
+  },
+  sheetDeleteSchedule:()=>{
+    askPassword(()=>{
+      openSheet(`<h3>일정을 삭제하시겠어요?</h3>
+        <div class="muted" style="line-height:1.6;">확정된 일정이 취소되며, 다시 일정을 확정할 수 있게 돼요.</div>
+        <div class="card" style="margin-top:12px;padding:12px 14px;">
+          <div style="font-weight:700;font-size:15px;">${dateLabel(App.room.confirmed.date)} ${minToHHMM(App.room.confirmed.start)}~${minToHHMM(App.room.confirmed.end)}</div>
+        </div>
+        <button class="btn btn-danger" data-act="doDeleteSchedule">확인: 삭제하기</button>
+        <button class="btn-text" data-act="closeSheet">취소</button>`);
+    });
+  },
+  doDeleteSchedule:async()=>{
+    App.room.confirmed=null;
+    App._changeMode=null;
+    await Store.setRoom(App.code,App.room);
+    closeSheet();render();
+    toast('일정을 삭제했어요');
   },
   doConfirmManual:async()=>{
     const room=App.room;
+    const wasConfirmed=!!room.confirmed;
     const date=$('#manualDate').value;
     const start=+$('#manualStart').value;
-    const end=start+windowLenOf(room)*room.unit;
-    room.confirmed={date,start,end};
+    const wl=windowLenOf(room),cpd=cellsPerDayOf(room);
+    const end=start+wl*room.unit;
+    const dIdx=room.dates.indexOf(date),s=(start-room.timeStart)/room.unit;
+    const idxs=[];for(let k=0;k<wl;k++)idxs.push(dIdx*cpd+s+k);
+    const attendees=attendeesForIdxs(App.people,idxs).map(p=>({name:p.name,title:p.title}));
+    room.confirmed={date,start,end,attendees};
     await Store.setRoom(App.code,room);
     closeSheet();render();
     if(!getConfetti(App.code).confirmed){setConfettiFlag(App.code,'confirmed');fireConfetti();}
-    toast('일정을 확정했어요 🎉');
+    toast(wasConfirmed?'일정을 변경했어요 ✅':'일정을 확정했어요 🎉');
   },
+  toggleReqPerson:(el)=>{ el.classList.toggle('on'); },
   sheetSettings:()=>{
     askPassword(()=>{openSettingsSheet();});
   }
 };
+/* 참고 순위나 직접 선택으로 일정을 확정하는 내부 함수 */
+async function doConfirmInternal(w){
+  const wasConfirmed=!!App.room.confirmed;
+  const idxs=w.idxs;
+  const attendees=attendeesForIdxs(App.people,idxs).map(p=>({name:p.name,title:p.title}));
+  App.room.confirmed={date:w.date,start:w.start,end:w.end,attendees};
+  App._changeMode=null;
+  await Store.setRoom(App.code,App.room);
+  closeSheet();render();
+  if(!getConfetti(App.code).confirmed){setConfettiFlag(App.code,'confirmed');fireConfetti();}
+  toast(wasConfirmed?'일정을 변경했어요 ✅':'일정을 확정했어요 🎉');
+}
+/* 확정/변경 공통 피커: TOP3 중에서 고르거나, 직접 날짜·시간을 골라요.
+   title/actionLabel만 다르게 줘서 "확정"과 "변경" 양쪽에 같이 써요. */
+function openSchedulePicker(title,actionLabel){
+  const room=App.room;
+  const {top}=computeTop3(room,App.people);
+  App._top3=top;
+  const opts= top.map((w,i)=>`<button class="btn btn-ghost" style="text-align:left;height:auto;white-space:normal;display:block;" data-act="doConfirm" data-i="${i}">
+      <div style="font-weight:700;">${w.rank}순위 · ${dateLabel(w.date)} ${minToHHMM(w.start)}~${minToHHMM(w.end)}</div>
+      <div class="muted" style="margin-top:3px;font-weight:400;">참여: ${esc(attendeeNamesText(room,App.people,w.idxs))}</div>
+    </button>`).join('');
+  const wl=windowLenOf(room),cpd=cellsPerDayOf(room);
+  let startOpts='';
+  for(let s=0;s+wl<=cpd;s++){ const t=room.timeStart+s*room.unit; startOpts+=`<option value="${t}">${minToHHMM(t)}~${minToHHMM(t+wl*room.unit)}</option>`; }
+  openSheet(`<h3>${esc(title)}</h3>
+    ${opts||'<div class="muted">추천 결과가 없어요</div>'}
+    <hr class="sep">
+    <div class="sectitle">또는 직접 선택</div>
+    <div class="row">
+      <select id="manualDate">${room.dates.map(d=>`<option value="${d}">${dateLabel(d)}</option>`).join('')}</select>
+      <select id="manualStart">${startOpts}</select>
+    </div>
+    <div id="manualPreview" class="muted" style="margin-top:6px;"></div>
+    <button class="btn btn-ghost" data-act="doConfirmManual">${esc(actionLabel)}</button>
+    <button class="btn-text" data-act="closeSheet">닫기</button>`);
+  const manualIdxs=()=>{
+    const date=$('#manualDate').value,start=+$('#manualStart').value;
+    const dIdx=room.dates.indexOf(date),s=(start-room.timeStart)/room.unit;
+    const idxs=[];for(let k=0;k<wl;k++)idxs.push(dIdx*cpd+s+k);
+    return idxs;
+  };
+  const updatePreview=()=>{ $('#manualPreview').textContent='참여: '+attendeeNamesText(room,App.people,manualIdxs()); };
+  $('#manualDate').onchange=updatePreview;
+  $('#manualStart').onchange=updatePreview;
+  updatePreview();
+}
 function openSheet(html){
   closeSheet();
   const ov=document.createElement('div');ov.className='overlay';ov.id='overlay';
@@ -1688,14 +2026,10 @@ function askPassword(onOk){
 }
 function openSettingsSheet(){
   const room=App.room;const locked=App.people.length>0;
-  const reqNameKeys=new Set(room.required.filter(r=>r.type==='name').map(r=>r.name+'|'+r.title));
   const peopleToggles=App.people.map(p=>{
-    const key=p.name+'|'+p.title;
     const isManager=room.manager && room.manager.name===p.name && room.manager.title===p.title;
-    return `<label class="row" style="gap:8px;padding:5px 0;">
-      <input type="checkbox" class="reqToggle" data-name="${esc(p.name)}" data-title="${esc(p.title)}" ${(reqNameKeys.has(key)||isReqPerson(room,p))?'checked':''} ${isManager?'disabled':''}>
-      <span>${esc(p.name)} · ${esc(p.title)}${isManager?' (담당자)':''}</span>
-    </label>`;
+    const on=isReqPerson(room,p);
+    return `<button type="button" class="chip reqToggle ${on?'on':''}" data-name="${esc(p.name)}" data-title="${esc(p.title)}" ${isManager?'disabled':''} data-act="${isManager?'':'toggleReqPerson'}">${esc(p.name)} · ${esc(p.title)}${isManager?' (담당자)':''}</button>`;
   }).join('');
   openSheet(`<h3>방 설정 수정</h3>
     <div class="field"><label>모임 이름</label><input type="text" id="s_name" value="${esc(room.name)}"></div>
@@ -1743,14 +2077,14 @@ globalActions.saveSettings=async()=>{
   { const mv=($('#s_min')||{}).value; room.minCount=(mv===''||mv==null)?null:Math.min(total,Math.max(1,parseInt(mv,10)||1)); }
   if(!App.people.length){room.timeStart=+$('#s_tstart').value;room.unit=+$('#s_unit').value;}
   /* 필참자 갱신: 담당자는 항상 유지, 직급전용 항목은 그대로 두고,
-     링크로 들어온 사람 체크박스 선택 결과를 이름 지정 항목으로 반영해요. */
+     링크로 들어온 사람 토글칩 선택 결과를 이름 지정 항목으로 반영해요. */
   const titleOnly=room.required.filter(r=>r.type==='title');
   const managerReq={type:'name',name:room.manager.name,title:room.manager.title};
-  const checked=$$('.reqToggle').filter(c=>c.checked).map(c=>({type:'name',name:c.getAttribute('data-name'),title:c.getAttribute('data-title')}));
+  const checked=$$('.reqToggle.on').map(c=>({type:'name',name:c.getAttribute('data-name'),title:c.getAttribute('data-title')}));
   const seen=new Set([managerReq.name+'|'+managerReq.title]);
   const nameReqs=[managerReq];
   checked.forEach(r=>{ const k=r.name+'|'+r.title; if(!seen.has(k)){seen.add(k);nameReqs.push(r);} });
-  /* 아직 방에 들어오지 않은 이름 지정 필참자는 체크박스가 없으니 그대로 유지해요 */
+  /* 아직 방에 들어오지 않은 이름 지정 필참자는 체크박스가 없으니, 지우지 말고 그대로 유지해요 */
   room.required.filter(r=>r.type==='name'&&!reqJoined(r,App.people)).forEach(r=>{ const k=r.name+'|'+r.title; if(!seen.has(k)){seen.add(k);nameReqs.push(r);} });
   room.required=[...nameReqs,...titleOnly];
   const newPw=$('#s_pw').value;
