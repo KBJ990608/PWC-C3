@@ -294,14 +294,22 @@ function setIdentity(code,name,title){LS.set('cimo:id:'+code,{name,title});}
 function getMyProfile(){return LS.get('cimo:myProfile',null);}
 function setMyProfile(name,dept,rank){LS.set('cimo:myProfile',{name:(name||'').trim(),dept,rank});}
 function clearMyProfile(){LS.set('cimo:myProfile',null);}
-function profileTitle(gp){return (gp&&gp.dept&&gp.rank)? (gp.dept+' · '+gp.rank):'';}
-const DEPTS=['CM','TMT','IME'];
+function profileTitle(gp){if(!gp||!gp.rank)return '';return gp.dept?(gp.dept+' · '+gp.rank):gp.rank;}
+const DEPTS=['CM','TMT','IME','FS'];
 const RANKS=['주니어','시니어','매니저','디렉터'];
 let PD=null; // 내 정보 탭에서 저장 전 임시로 들고 있는 입력값
 let profileEditMode=false; // true면 수정 폼, false면 저장된 프로필 카드
 function initProfileDraft(){
   const gp=getMyProfile();
   PD = gp? {name:gp.name||'',dept:gp.dept||null,rank:gp.rank||null} : {name:'',dept:null,rank:null};
+  /* 목록에 없는 부서로 저장돼 있으면 '직접 입력' 상태로 열어요 */
+  PD.deptCustom = !!(PD.dept && DEPTS.indexOf(PD.dept)<0);
+  PD.deptText = PD.deptCustom ? PD.dept : '';
+}
+/* '직접 입력' 칸에 적던 글자가 다시 그릴 때 사라지지 않게 미리 옮겨둬요 */
+function syncDeptText(){
+  const el=$('#p_dept_custom'); if(el&&PD)PD.deptText=el.value;
+  const nm=$('#p_name'); if(nm&&PD)PD.name=nm.value;
 }
 function profileAvatar(name,size){
   size=size||64;
@@ -508,11 +516,16 @@ function rankOf(x){
   if(x.rank)return String(x.rank).trim();
   return splitTitle(x.title||'').rank;
 }
+/* 이름으로 지정한 필참자와 참여자를 비교할 때는 이름 + 직급으로 봐요.
+   참여자 직급에 부서가 붙어 있어도("FS · 시니어") 같은 사람으로 인식해요. */
+function reqMatch(req,p){return !!req && req.type==='name' && !!p && p.name===req.name && rankOf(p)===rankOf(req.title);}
+function reqJoined(req,people){return people.some(p=>reqMatch(req,p));}
+function isReqPerson(room,p){return room.required.some(r=>reqMatch(r,p));}
 function reqSatisfiedForWindow(room,people,idxs){
   let satisfied=0;
   for(const req of room.required){
     if(req.type==='name'){
-      const p=people.find(p=>p.name===req.name&&p.title===req.title);
+      const p=people.find(p=>reqMatch(req,p));
       if(p&&idxs.every(i=>p.cells[i]==='1'))satisfied++;
     }else{
       const ok=people.some(p=>rankOf(p)===rankOf(req.title)&&idxs.every(i=>p.cells[i]==='1'));
@@ -520,6 +533,27 @@ function reqSatisfiedForWindow(room,people,idxs){
     }
   }
   return satisfied;
+}
+/* 최소 참석 인원: 방장이 정하지 않으면 과반(5명 → 3명) */
+function majorityOf(n){return Math.max(1,Math.floor((n||1)/2)+1);}
+function minAttendOf(room){
+  const n=room.totalCount||1;
+  const m=(room.minCount==null||room.minCount==='')?majorityOf(n):+room.minCount;
+  return Math.min(n,Math.max(1,m));
+}
+/* 이 구간에 못 오는 필참자 이름 목록 */
+function missingReqs(room,people,idxs){
+  const out=[];
+  for(const req of room.required){
+    if(req.type==='name'){
+      const p=people.find(p=>reqMatch(req,p));
+      if(!p||!idxs.every(i=>p.cells[i]==='1'))out.push(req.name);
+    }else{
+      const ok=people.some(p=>rankOf(p)===rankOf(req.title)&&idxs.every(i=>p.cells[i]==='1'));
+      if(!ok)out.push(rankOf(req.title)+' 직급');
+    }
+  }
+  return out;
 }
 function computeTop3(room,people){
   const cpd=cellsPerDayOf(room),wl=windowLenOf(room);
@@ -534,26 +568,40 @@ function computeTop3(room,people){
     }
   });
   const reqCount=room.required.length;
+  const minCount=minAttendOf(room);
+  /* 순위 규칙
+     1순위: 필참자 전원 + 총 인원 전원 / 2순위: 필참자 전원 + 나머지 일부
+     3순위: 필참자 일부(1명 이상, 필참자가 2명 이상인 방만)
+     필참자가 아무도 없는 시간과 최소 참석 인원 미만인 시간은 추천에서 빼요. */
   for(const w of out){
     if(!reqCount)w.tier=0;
-    else if(w.req<reqCount)w.tier=3;
-    else w.tier=(w.totalAvail>=room.totalCount)?1:2;
+    else if(w.req===reqCount)w.tier=(w.totalAvail>=room.totalCount)?1:2;
+    else if(w.req>=1&&reqCount>=2)w.tier=3;
+    else w.tier=9;
+    w.eligible = w.tier!==9 && w.totalAvail>0 && w.totalAvail>=minCount;
   }
   out.sort((a,b)=> a.tier-b.tier || b.totalAvail-a.totalAvail || cmpDate(a.date,b.date) || a.start-b.start);
+  const elig=out.filter(w=>w.eligible);
+  for(let i=0;i<elig.length;i++){
+    const prev=elig[i-1];
+    elig[i].rank=(prev && prev.tier===elig[i].tier && prev.totalAvail===elig[i].totalAvail)? prev.rank : i+1;
+  }
   const top=[];
-  for(const w of out){
+  for(const w of elig){
     if(top.length>=3)break;
     if(top.some(t=>t.date===w.date&&t.start===w.start))continue;
-    if(w.totalAvail===0)continue;
     top.push(w);
   }
-  for(let i=0;i<out.length;i++){
-    const prev=out[i-1];
-    out[i].rank=(prev && prev.tier===out[i].tier && prev.totalAvail===out[i].totalAvail)? prev.rank : i+1;
-  }
   const last=top[top.length-1];
-  const tiedMore=last?out.filter(w=>w.rank===last.rank&&w.totalAvail>0&&!top.includes(w)).length:0;
-  return {top,best:out[0]||null,tiedMore};
+  const tiedMore=last?elig.filter(w=>w.rank===last.rank&&!top.includes(w)).length:0;
+  /* 참고 카드: 순위 규칙과 상관없이 가장 많이 모이는 시간.
+     추천 TOP 3보다 더 많이 모일 때만 보여줘서 방장이 판단할 근거를 줘요. */
+  const byCount=out.slice().sort((a,b)=> b.totalAvail-a.totalAvail || b.req-a.req || cmpDate(a.date,b.date) || a.start-b.start);
+  let ref=byCount[0]||null;
+  const topMax=top.reduce((m,w)=>Math.max(m,w.totalAvail),0);
+  if(!ref || ref.totalAvail===0 || ref.totalAvail<=topMax || top.includes(ref)) ref=null;
+  if(ref) ref.missing=missingReqs(room,people,ref.idxs);
+  return {top,best:elig[0]||null,tiedMore,ref,minCount};
 }
 
 /* 마감일만 지정된 경우(YYYY-MM-DD)에는 그날 하루가 끝나는 시점(다음 날 00:00)에 잠가요.
@@ -609,7 +657,7 @@ async function loadBusy(code){
     codes.delete(code); codes.delete('202610');
     const keys=new Set();
     const gp=getMyProfile();
-    if(gp&&gp.name&&gp.dept&&gp.rank)keys.add(personKey(gp.name,profileTitle(gp)));
+    if(gp&&gp.name&&gp.rank)keys.add(personKey(gp.name,profileTitle(gp)));
     if(App.me&&App.code===code)keys.add(personKey(App.me.name,App.me.title));
     const out=[];
     for(const c of codes){
@@ -641,7 +689,7 @@ async function openRoom(code,tab){
     /* 내 정보에 전역 프로필을 저장해뒀다면, 그 방에 예전에 다른 이름으로 남아있던
        기록보다 "지금의 나"를 항상 우선해요 — 그래야 매번 안 바뀌어요. */
     const gp=getMyProfile();
-    if(gp && gp.name && gp.dept && gp.rank){
+    if(gp && gp.name && gp.rank){
       const t=profileTitle(gp);
       App.me={name:gp.name,title:t};
       setIdentity(code,gp.name,t);
@@ -916,15 +964,17 @@ function vProfileTab(){
   if(showForm){
     if(!PD)initProfileDraft();
     profileBlock=`<div class="card" style="display:flex;flex-direction:column;gap:14px;">
-      <div class="sectitle">내 이름 · 부서 · 직급</div>
+      <div class="sectitle">내 이름 · 부서(선택) · 직급</div>
       <div class="muted" style="margin-top:-8px;">한 번 등록해두면 모임 방에 들어갈 때마다 다시 입력하지 않아도 돼요.</div>
       <div class="field">
         <label>이름</label>
         <input type="text" id="p_name" placeholder="이름" value="${esc(PD.name)}">
       </div>
       <div class="field">
-        <label>부서</label>
-        <div class="segrow">${DEPTS.map(d=>`<button class="seg ${PD.dept===d?'on':''}" data-act="profDept" data-v="${d}">${d}</button>`).join('')}</div>
+        <label>부서 <span style="font-weight:400;color:var(--ink-faint);">선택</span></label>
+        <div class="segrow">${DEPTS.map(d=>`<button class="seg ${!PD.deptCustom&&PD.dept===d?'on':''}" data-act="profDept" data-v="${d}">${d}</button>`).join('')}<button class="seg ${PD.deptCustom?'on':''}" data-act="profDept" data-v="__custom">직접 입력</button></div>
+        ${PD.deptCustom?`<input type="text" id="p_dept_custom" placeholder="부서명 입력 (예: Deals)" maxlength="20" value="${esc(PD.deptText||'')}">`:''}
+        <div class="muted" style="font-size:12px;">부서는 비워둬도 돼요. 선택한 부서를 한 번 더 누르면 해제돼요.</div>
       </div>
       <div class="field">
         <label>직급</label>
@@ -941,7 +991,7 @@ function vProfileTab(){
       ${profileAvatar(gp.name)}
       <div>
         <div style="font-size:17px;font-weight:800;">${esc(gp.name)}</div>
-        <div class="muted" style="margin-top:3px;">${esc(gp.dept)} · ${esc(gp.rank)}</div>
+        <div class="muted" style="margin-top:3px;">${esc(profileTitle(gp))}</div>
       </div>
       <button class="btn btn-ghost btn-sm" data-act="editProfile">수정</button>
     </div>`;
@@ -970,8 +1020,8 @@ function resetDraft(){
     timeStart:0,timeEnd:1440,unit:30,
     durMode:'2h',durCustomH:1,durCustomM:0,
     deadlineMode:'auto',deadlineValue:null,
-    total:1,
-    required:[],
+    total:1, minCount:null,
+    required:[], reqName:'', reqRank:null,
     pw:''
   });
 }
@@ -1042,14 +1092,16 @@ function vCreate(){
       <div class="row between"><span class="sectitle">총 인원</span>
         <div class="stepper"><button data-act="total" data-v="-1">−</button><b id="totalNum">${C.total}</b><button data-act="total" data-v="1">+</button></div>
       </div>
+      <div class="row between"><span class="sectitle">최소 참석 인원</span>
+        <div class="stepper"><button data-act="minc" data-v="-1">−</button><b>${C.minCount==null?majorityOf(C.total):C.minCount}</b><button data-act="minc" data-v="1">+</button></div>
+      </div>
+      <div class="muted" style="margin-top:-6px;">${C.minCount==null?`기본은 과반(${majorityOf(C.total)}명)이에요. `:''}이보다 적게 모이는 시간은 추천하지 않아요.${C.minCount!=null?` <button class="btn-text" style="padding:0;font-size:13px;" data-act="mincAuto">과반으로 되돌리기</button>`:''}</div>
       <hr class="sep">
       <div class="sectitle">필참자</div>
       <div id="reqChips" class="chiprow">${renderReqChips()}</div>
-      <div class="row">
-        <input type="text" id="f_reqname" placeholder="이름(선택)" style="flex:1;">
-        <input type="text" id="f_reqtitle" placeholder="직급" style="flex:1;">
-        <button class="btn btn-ghost btn-sm" data-act="addReq">추가</button>
-      </div>
+      <input type="text" id="f_reqname" placeholder="이름(선택)" value="${esc(C.reqName||'')}" style="border:1px solid var(--line-strong);background:var(--bg-elev);color:var(--ink);border-radius:var(--radius-sm);padding:11px 12px;font-size:15px;width:100%;">
+      <div class="segrow">${RANKS.map(r=>`<button class="seg ${C.reqRank===r?'on':''}" data-act="reqRank" data-v="${r}">${r}</button>`).join('')}</div>
+      <button class="btn btn-ghost btn-sm" data-act="addReq" style="align-self:flex-start;">필참자 추가</button>
       <div class="muted">이름 없이 직급만 넣으면 '그 직급 중 1명'으로 처리돼요.</div>
     </div>
 
@@ -1064,14 +1116,14 @@ function vCreate(){
 }
 function renderCreatorAsManager(){
   const gp=getMyProfile();
-  if(gp && gp.name && gp.dept && gp.rank){
+  if(gp && gp.name && gp.rank){
     return `<div class="row" style="gap:10px;">
       ${profileAvatar(gp.name,40)}
-      <div><div style="font-weight:700;">${esc(gp.name)}</div><div class="muted" style="font-size:12.5px;">${esc(gp.dept)} · ${esc(gp.rank)}</div></div>
+      <div><div style="font-weight:700;">${esc(gp.name)}</div><div class="muted" style="font-size:12.5px;">${esc(profileTitle(gp))}</div></div>
     </div>
     <div class="muted">방을 만드는 ${esc(gp.name)}님이 자동으로 담당자·필참자가 돼요. (내 정보에서 변경 가능)</div>`;
   }
-  return `<div class="banner-lock">담당자 정보가 아직 없어요. 먼저 "내 정보"에서 이름·부서·직급을 등록해주세요.</div>
+  return `<div class="banner-lock">담당자 정보가 아직 없어요. 먼저 "내 정보"에서 이름·직급을 등록해주세요.</div>
     <button class="btn btn-ghost btn-sm" style="width:auto;align-self:flex-start;" data-act="gotoProfileFromCreate">내 정보로 이동</button>`;
 }
 function renderDetailsQ(){
@@ -1144,19 +1196,25 @@ const createActions={
   durH:(v)=>{C.durCustomH=Math.max(0,C.durCustomH+(+v));render();},
   durM:(v)=>{C.durCustomM=Math.max(0,C.durCustomM+(+v));if(C.durCustomM>=60){C.durCustomM=0;}render();},
   dlMode:(v)=>{C.deadlineMode=v==='none'?'none':'manual';render();},
-  total:(v)=>{const min=1+C.required.length;C.total=Math.max(min,C.total+(+v));render();},
+  total:(v)=>{const min=1+C.required.length;C.total=Math.max(min,C.total+(+v));if(C.minCount!=null&&C.minCount>C.total)C.minCount=C.total;render();},
+  minc:(v)=>{const cur=C.minCount==null?majorityOf(C.total):C.minCount;C.minCount=Math.min(C.total,Math.max(1,cur+(+v)));render();},
+  mincAuto:()=>{C.minCount=null;render();},
+  reqRank:(v)=>{const el=$('#f_reqname');if(el)C.reqName=el.value;C.reqRank=(C.reqRank===v?null:v);render();},
   addReq:()=>{
-    const nm=$('#f_reqname').value.trim(),ti=$('#f_reqtitle').value.trim();
-    if(!ti){toast('직급을 입력해주세요');return;}
+    const el=$('#f_reqname');const nm=(el?el.value:(C.reqName||'')).trim(),ti=C.reqRank;
+    if(!ti){if(el)C.reqName=el.value;toast('직급을 선택해주세요');return;}
+    const dup=C.required.some(r=>nm?(r.type==='name'&&r.name===nm&&rankOf(r.title)===ti):(r.type==='title'&&rankOf(r.title)===ti));
+    if(dup){toast('이미 추가한 필참자예요');return;}
     C.required.push(nm?{type:'name',name:nm,title:ti}:{type:'title',title:ti});
     C.total=Math.max(C.total,1+C.required.length);
+    C.reqName='';C.reqRank=null;
     render();
   },
   rmReq:(v)=>{C.required.splice(+v,1);render();},
   submitCreate:async()=>{
     const errEl=$('#createErr');errEl.textContent='';
     const gp=getMyProfile();
-    if(!gp||!gp.name||!gp.dept||!gp.rank){errEl.textContent='담당자 정보가 필요해요. 먼저 "내 정보"에서 이름·부서·직급을 등록해주세요.';return;}
+    if(!gp||!gp.name||!gp.rank){errEl.textContent='담당자 정보가 필요해요. 먼저 "내 정보"에서 이름·직급을 등록해주세요.';return;}
     if(!C.name.trim()){errEl.textContent='모임 이름을 입력해주세요.';return;}
     if(!C.dates.length){errEl.textContent='날짜를 1개 이상 선택해주세요.';return;}
     const durationMin=C.durMode==='1h'?60:C.durMode==='2h'?120:C.durMode==='3h'?180:(C.durCustomH*60+C.durCustomM);
@@ -1179,7 +1237,7 @@ const createActions={
       code,name:C.name.trim(),details:C.details||'',dates:C.dates.slice().sort(),
       timeStart:C.timeStart,timeEnd:C.timeEnd,unit:C.unit,durationMin,
       deadline,manager:{name:gp.name,title:managerTitle},
-      totalCount:C.total,required,pwHash,confirmed:null,createdAt:Date.now()
+      totalCount:C.total,minCount:C.minCount,required,pwHash,confirmed:null,createdAt:Date.now()
     };
     await Store.setRoom(code,room);
     const doneCode=code;resetDraft();
@@ -1244,8 +1302,7 @@ function vInput(){
   const room=App.room,people=App.people;
   const lockMsg=isLocked(room);
   if(!App.me){
-    const doneKeys=new Set(people.map(p=>p.name+'|'+p.title));
-    const chips=room.required.filter(r=>r.type==='name'&&!doneKeys.has(r.name+'|'+r.title));
+    const chips=room.required.filter(r=>r.type==='name'&&!reqJoined(r,people));
     return `
     <div class="card">
       <div class="sectitle" style="margin-bottom:8px;">이름을 입력해주세요</div>
@@ -1295,9 +1352,25 @@ function renderInputTable(){
 function vResults(){
   const room=App.room,people=App.people;
   if(!people.length)return '<div class="muted" style="text-align:center;padding:40px 0;">아직 입력한 사람이 없어요</div>';
-  const {top,best,tiedMore}=computeTop3(room,people);
-  if(!best||best.totalAvail===0)return `<div class="muted" style="text-align:center;padding:40px 0;">겹치는 시간이 없어요 😢</div>`;
+  const {top,tiedMore,ref,minCount}=computeTop3(room,people);
+  if(!top.length&&!ref)return `<div class="muted" style="text-align:center;padding:40px 0;">겹치는 시간이 없어요 😢</div>`;
   const heat=buildHeatmap(room,people);
+  const refCard=ref?`<div class="card" data-act="hlWindow" data-idxs="${ref.idxs.join(',')}" style="border-style:dashed;cursor:pointer;display:flex;flex-direction:column;gap:4px;">
+      <div style="font-size:12px;font-weight:700;color:var(--ink-soft);">참고 · 가장 많이 모이는 시간</div>
+      <div style="font-weight:700;">${dateLabel(ref.date)} ${minToHHMM(ref.start)}~${minToHHMM(ref.end)}</div>
+      <div class="muted">전체 ${ref.totalAvail}/${room.totalCount} · 필참자 ${ref.req}/${room.required.length}${ref.missing.length?` · <span style="color:var(--danger);">${esc(ref.missing.join(', '))} 불참</span>`:''}</div>
+      <div class="muted" style="font-size:12px;">${ref.missing.length?"필참자 조건 때문에 추천에서는 빠졌어요. 필참자에게 이 시간 조정이 가능한지 물어보세요.":"최소 참석 인원("+minCount+"명)보다 적어서 추천에서는 빠졌어요."}</div>
+    </div>`:'';
+  if(!top.length){
+    return `<div class="card" style="text-align:center;">
+      <div style="font-weight:700;margin-bottom:4px;">추천 기준을 만족하는 시간이 없어요</div>
+      <div class="muted">필참자가 참석하고 ${minCount}명 이상 모이는 시간을 찾지 못했어요.</div>
+    </div>
+    ${refCard}
+    <div class="sectitle">히트맵 (진하고 황금색일수록 많은 인원 가능)</div>
+    <div class="gridwrap">${renderHeatTable(heat)}</div>
+    <div id="cellPanel"></div>`;
+  }
   if(top[0] && top[0].totalAvail===room.totalCount && !getConfetti(App.code).golden){
     setConfettiFlag(App.code,'golden');setTimeout(fireConfetti,50);
   }
@@ -1315,6 +1388,8 @@ function vResults(){
   return `
   <div style="display:flex;flex-direction:column;gap:10px;">${cards}</div>
   ${tiedMore>0?`<div class="muted" style="margin-top:-8px;padding:0 4px;">같은 ${top[top.length-1].rank}위 시간이 ${tiedMore}개 더 있어요. 히트맵에서 확인해보세요.</div>`:''}
+  <div class="muted" style="margin-top:-8px;padding:0 4px;font-size:12px;">필참자가 참석하고 최소 ${minCount}명 이상 모이는 시간만 추천해요.</div>
+  ${refCard}
   <div class="sectitle">히트맵 (진하고 황금색일수록 많은 인원 가능)</div>
   <div class="gridwrap">${renderHeatTable(heat)}</div>
   <div id="cellPanel"></div>`;
@@ -1344,8 +1419,7 @@ function vStatus(){
   const full=done>=total;
   const doneNames=people.map(p=>`${p.name}·${p.title}`);
   const reqDone=room.required.filter(r=>r.type==='name').map(r=>r.name+'|'+r.title);
-  const doneKeys=new Set(people.map(p=>p.name+'|'+p.title));
-  const pendingReq=room.required.filter(r=>r.type==='name'&&!doneKeys.has(r.name+'|'+r.title));
+  const pendingReq=room.required.filter(r=>r.type==='name'&&!reqJoined(r,people));
   const restCount=Math.max(0,total-done-pendingReq.length);
   const link=baseUrl()+'#room='+App.code;
   const invite=`📅 ${room.name}\n아래 링크를 누르면 바로 들어와서 가능한 시간을 표시할 수 있어요.\n${link}\n(링크가 안 열리면 코드 ${App.code}로 직접 입장해주세요)`;
@@ -1436,8 +1510,15 @@ const globalActions={
     render();
   },
   calPick:(el,v)=>{App.calSelectedDate=(App.calSelectedDate===v?null:v);render();},
-  profDept:(el,v)=>{if(!PD)initProfileDraft();PD.dept=v;render();},
-  profRank:(el,v)=>{if(!PD)initProfileDraft();PD.rank=v;render();},
+  profDept:(el,v)=>{
+    if(!PD)initProfileDraft();
+    syncDeptText();
+    if(v==='__custom'){PD.deptCustom=!PD.deptCustom;if(!PD.deptCustom){PD.dept=null;}}
+    else{PD.deptCustom=false;PD.dept=(PD.dept===v?null:v);}
+    render();
+    if(PD.deptCustom){const el=$('#p_dept_custom');if(el)el.focus();}
+  },
+  profRank:(el,v)=>{if(!PD)initProfileDraft();syncDeptText();PD.rank=v;render();},
   editProfile:()=>{initProfileDraft();profileEditMode=true;render();},
   gotoProfileFromCreate:async()=>{
     profileEditMode=true;initProfileDraft();App.mainTab='profile';
@@ -1450,7 +1531,9 @@ const globalActions={
     if(nameEl)PD.name=nameEl.value.trim();
     const errEl=$('#profErr');
     if(!PD.name){errEl.textContent='이름을 입력해주세요.';return;}
-    if(!PD.dept){errEl.textContent='부서를 선택해주세요.';return;}
+    syncDeptText();
+    const dept = PD.deptCustom ? (PD.deptText||'').trim().replace(/·/g,' ') : PD.dept;
+    PD.dept = dept || null;
     if(!PD.rank){errEl.textContent='직급을 선택해주세요.';return;}
     setMyProfile(PD.name,PD.dept,PD.rank);
     profileEditMode=false;
@@ -1519,10 +1602,8 @@ const globalActions={
     const idx=+el.getAttribute('data-idx');
     const avail=App.people.filter(p=>p.cells[idx]==='1');
     const unavail=App.people.filter(p=>p.cells[idx]==='0');
-    const reqNames=new Set(App.room.required.filter(r=>r.type==='name').map(r=>r.name+'|'+r.title));
-    const doneKeys=new Set(App.people.map(p=>p.name+'|'+p.title));
-    const notEntered=App.room.required.filter(r=>r.type==='name'&&!doneKeys.has(r.name+'|'+r.title));
-    function mark(p){return reqNames.has(p.name+'|'+p.title)?'★ ':'';}
+    const notEntered=App.room.required.filter(r=>r.type==='name'&&!reqJoined(r,App.people));
+    function mark(p){return isReqPerson(App.room,p)?'★ ':'';}
     const html=`<div class="card namepanel" style="margin-top:10px;">
       <div class="grp"><b>가능 (${avail.length})</b>${avail.map(p=>`<div class="nm">${mark(p)}${esc(p.name)}·${esc(p.title)}</div>`).join('')||'<div class="muted">없음</div>'}</div>
       <div class="grp"><b>불가능 (${unavail.length})</b>${unavail.map(p=>`<div class="nm">${mark(p)}${esc(p.name)}·${esc(p.title)}</div>`).join('')||'<div class="muted">없음</div>'}</div>
@@ -1612,7 +1693,7 @@ function openSettingsSheet(){
     const key=p.name+'|'+p.title;
     const isManager=room.manager && room.manager.name===p.name && room.manager.title===p.title;
     return `<label class="row" style="gap:8px;padding:5px 0;">
-      <input type="checkbox" class="reqToggle" data-name="${esc(p.name)}" data-title="${esc(p.title)}" ${reqNameKeys.has(key)?'checked':''} ${isManager?'disabled':''}>
+      <input type="checkbox" class="reqToggle" data-name="${esc(p.name)}" data-title="${esc(p.title)}" ${(reqNameKeys.has(key)||isReqPerson(room,p))?'checked':''} ${isManager?'disabled':''}>
       <span>${esc(p.name)} · ${esc(p.title)}${isManager?' (담당자)':''}</span>
     </label>`;
   }).join('');
@@ -1620,6 +1701,7 @@ function openSettingsSheet(){
     <div class="field"><label>모임 이름</label><input type="text" id="s_name" value="${esc(room.name)}"></div>
     <div class="field"><label>세부내용</label><input type="text" id="s_details" value="${esc(room.details||'')}"></div>
     <div class="field"><label>총 인원</label><input type="number" id="s_total" min="${Math.max(room.required.length,App.people.length)}" value="${room.totalCount}"></div>
+    <div class="field"><label>최소 참석 인원 <span style="font-weight:400;color:var(--ink-faint);">비우면 과반</span></label><input type="number" id="s_min" min="1" placeholder="자동 (과반)" value="${room.minCount==null?'':room.minCount}"></div>
     <div class="field"><label>시작 시각 ${locked?'(입력자가 있어 수정 불가)':''}</label><select id="s_tstart" ${locked?'disabled':''}>${timeOptions(room.timeStart)}</select></div>
     <div class="field"><label>시간 단위 ${locked?'(입력자가 있어 수정 불가)':''}</label><select id="s_unit" ${locked?'disabled':''}>${(room.unit===45?[15,30,45,60]:[15,30,60]).map(u=>`<option value="${u}" ${room.unit===u?'selected':''}>${u}분</option>`).join('')}</select></div>
     <div class="field">
@@ -1658,6 +1740,7 @@ globalActions.saveSettings=async()=>{
   if(newPwCheck && newPwCheck.length<4){errEl.textContent='새 비밀번호는 4자 이상이어야 해요.';return;}
   room.deadline= noDl?{mode:'none',value:null}:{mode:'manual',value:dlVal};
   room.name=name;room.details=$('#s_details').value;room.totalCount=total;
+  { const mv=($('#s_min')||{}).value; room.minCount=(mv===''||mv==null)?null:Math.min(total,Math.max(1,parseInt(mv,10)||1)); }
   if(!App.people.length){room.timeStart=+$('#s_tstart').value;room.unit=+$('#s_unit').value;}
   /* 필참자 갱신: 담당자는 항상 유지, 직급전용 항목은 그대로 두고,
      링크로 들어온 사람 체크박스 선택 결과를 이름 지정 항목으로 반영해요. */
@@ -1667,6 +1750,8 @@ globalActions.saveSettings=async()=>{
   const seen=new Set([managerReq.name+'|'+managerReq.title]);
   const nameReqs=[managerReq];
   checked.forEach(r=>{ const k=r.name+'|'+r.title; if(!seen.has(k)){seen.add(k);nameReqs.push(r);} });
+  /* 아직 방에 들어오지 않은 이름 지정 필참자는 체크박스가 없으니 그대로 유지해요 */
+  room.required.filter(r=>r.type==='name'&&!reqJoined(r,App.people)).forEach(r=>{ const k=r.name+'|'+r.title; if(!seen.has(k)){seen.add(k);nameReqs.push(r);} });
   room.required=[...nameReqs,...titleOnly];
   const newPw=$('#s_pw').value;
   if(newPw){ if(newPw.length<4){errEl.textContent='새 비밀번호는 4자 이상이어야 해요.';return;} room.pwHash=await sha256Hex(newPw); }
