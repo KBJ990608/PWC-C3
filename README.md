@@ -2,6 +2,8 @@
 
 단톡방 핑퐁은 그만, 링크 하나로 끝내는 5초 팀 일정 조율 웹앱
 
+🔗 **배포 주소: [https://cimo-pwc.vercel.app](https://cimo-pwc.vercel.app)**
+
 삼일회계법인 2026 Discover 신규입사자 연수 C-3조
 
 ## 구성
@@ -45,7 +47,7 @@
 1. 이 저장소에서 **최신** `index.html`을 내려받기
 2. 새 Claude 채팅에 첨부하고 "기존 기능과 디자인은 유지하고 아래 수정사항만 반영해서 index.html 파일로 줘"라고 요청
 3. 받은 파일 이름을 `index.html`로 맞춰서 [Add file] → [Upload files]로 덮어쓰기
-4. 1~2분 뒤 Vercel 주소에서 확인
+4. 1~2분 뒤 [배포 주소](https://cimo-pwc.vercel.app)에서 확인
 
 한 파일이라 두 사람이 동시에 고치면 나중에 올린 쪽이 앞의 수정을 덮어써요. 수정 전에 단톡방에 알리고 한 번에 한 사람만 작업해 주세요.
 
